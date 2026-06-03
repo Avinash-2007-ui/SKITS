@@ -94,16 +94,44 @@
     </header>
 
     <!-- HERO SECTION -->
-    <section class="relative min-h-screen flex flex-col items-center justify-center text-center px-4 pt-20 overflow-hidden">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.04)_0,transparent_60%)] pointer-events-none"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-zinc-800/20 rounded-full pointer-events-none [mask-image:radial-gradient(ellipse_at_center,white,transparent_70%)] animate-[spin_160s_linear_infinite]"></div>
+    <!-- CINEMATIC 3D ORBITAL HERO SECTION -->
+    <section class="relative min-h-screen flex flex-col items-center justify-center text-center px-4 pt-20 overflow-hidden bg-zinc-950">
+        
+        <!-- Ambient Deep Field Glow -->
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.06)_0,transparent_55%)] pointer-events-none z-0"></div>
+        
+        <!-- 3D SPACE CONTAINER (Holds the tilted orbital layers) -->
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 perspective-container">
+            <div id="orbital-universe" class="relative w-[800px] h-[800px] transform-3d scale-0 opacity-0">
+                
+                <!-- Outer Tech Ring Layer -->
+                <div class="orbital-ring ring-outer">
+                    <div class="orbital-node node-1"></div>
+                    <div class="orbital-node node-2"></div>
+                </div>
+                
+                <!-- Mid-Layer Telemetry Ring -->
+                <div class="orbital-ring ring-mid">
+                    <div class="orbital-node node-3"></div>
+                    <div class="orbital-node node-4"></div>
+                    <div class="orbital-dashed-overlay"></div>
+                </div>
+                
+                <!-- Inner High-Speed Matrix Ring -->
+                <div class="orbital-ring ring-inner">
+                    <div class="orbital-node node-5"></div>
+                </div>
+                
+            </div>
+        </div>
 
-        <div id="hero-content" class="max-w-4xl z-10 opacity-0">
+        <!-- HERO CONTENT CONTAINER -->
+        <div id="hero-content" class="max-w-4xl z-10 opacity-0 transform translate-y-12">
             <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-500/20 bg-orange-500/5 text-xs font-semibold text-orange-400 mb-6 tracking-wide uppercase">
                 <span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span> 
                 <span data-key="hero_pill">Enterprise Grade Systems</span>
             </span>
-            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-200 to-zinc-500 leading-[1.1] mb-6" data-key="hero_title">
+            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-100 to-zinc-400 leading-[1.1] mb-6" data-key="hero_title">
                 Powering the Future of <br> Industrial Automation
             </h1>
             <p class="text-zinc-400 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed mb-10" data-key="hero_desc">

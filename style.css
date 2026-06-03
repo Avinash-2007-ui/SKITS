@@ -104,3 +104,82 @@ body {
     0%, 100% { transform: scale(1); opacity: 0.9; }
     50% { transform: scale(1.04); opacity: 1; }
 }
+
+/* ==========================================================================
+   3D HARDWARE-ACCELERATED ORBITAL RINGS
+   ========================================================================== */
+
+.perspective-container {
+    perspective: 1200px; /* Dictates how deep the 3D tilt feels */
+}
+
+.transform-3d {
+    transform-style: preserve-3d;
+}
+
+/* Base properties for all ring rings */
+.orbital-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+}
+
+/* Individual Ring Tilts & Direct Rotational Speeds */
+.ring-outer {
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    transform: rotateX(68deg) rotateY(-10deg) rotateZ(0deg);
+    animation: spin-clockwise 45s linear infinite;
+}
+
+.ring-mid {
+    margin: 60px;
+    border: 1px solid rgba(249, 115, 22, 0.08);
+    transform: rotateX(68deg) rotateY(15deg) rotateZ(0deg);
+    animation: spin-counter-clockwise 35s linear infinite;
+}
+
+.ring-inner {
+    margin: 140px;
+    border: 1px dashed rgba(255, 255, 255, 0.03);
+    transform: rotateX(68deg) rotateY(-5deg) rotateZ(0deg);
+    animation: spin-clockwise 20s linear infinite;
+}
+
+/* Subtle dashed tech indicator inside the mid-ring */
+.orbital-dashed-overlay {
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    border: 1px dashed rgba(249, 115, 22, 0.15);
+    mask-image: radial-gradient(circle, transparent 50%, black 100%);
+}
+
+/* --- TELEMETRY DATA DATA NODES --- */
+.orbital-node {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background-color: #fff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Positioning nodes at different geometric anchor vectors */
+.node-1 { top: 0%; left: 50%; box-shadow: 0 0 12px #fff; }
+.node-2 { top: 100%; left: 50%; background-color: #f97316; box-shadow: 0 0 12px #f97316; }
+.node-3 { top: 50%; left: 0%; background-color: #f97316; box-shadow: 0 0 10px #f97316; }
+.node-4 { top: 30%; left: 93.3%; }
+.node-5 { top: 50%; left: 100%; box-shadow: 0 0 12px #fff; }
+
+/* --- 3D ROTATION ENGINE MATH --- */
+@keyframes spin-clockwise {
+    from { transform: rotateX(68deg) rotateY(var(--tw-rotate-y, 0deg)) rotateZ(0deg); }
+    to { transform: rotateX(68deg) rotateY(var(--tw-rotate-y, 0deg)) rotateZ(360deg); }
+}
+
+@keyframes spin-counter-clockwise {
+    from { transform: rotateX(68deg) rotateY(var(--tw-rotate-y, 0deg)) rotateZ(360deg); }
+    to { transform: rotateX(68deg) rotateY(var(--tw-rotate-y, 0deg)) rotateZ(0deg); }
+}

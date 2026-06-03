@@ -73,3 +73,56 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+window.addEventListener('DOMContentLoaded', () => {
+    gsap.registerPlugin(ScrollTrigger);
+    const tl = gsap.timeline();
+    
+    // 1. FADE OUT PRELOADER FIRST
+    tl.to("#preloader", {
+        opacity: 0,
+        duration: 0.8,
+        ease: "power2.inOut",
+        onComplete: () => {
+            document.getElementById("preloader").style.display = "none"; 
+        }
+    })
+    
+    // 2. SCALE AND FADE IN THE 3D ORBITAL ENGINE MATRIX IN TANDEM
+    .to("#orbital-universe", {
+        scale: 1,
+        opacity: 1,
+        duration: 1.8,
+        ease: "power4.out"
+    }, "-=0.3")
+    
+    // 3. SLIDE AND FADE IN THE HERO INTRO TEXT (Matches video sequence smoothly)
+    .to("#hero-content", {
+        opacity: 1,
+        y: 0,
+        duration: 1.4,
+        ease: "power3.out"
+    }, "-=1.3") // Drifts up smoothly while rings are still expanding beneath it
+    
+    // 4. DROP NAVBAR DOWN AT THE VERY END
+    .to("#navbar", {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: "power2.out"
+    }, "-=0.9");
+
+    // Keep your regular scrollTrigger logic for bento cards below...
+    gsap.from(".bento-card", {
+        scrollTrigger: {
+            trigger: "#services-section",
+            start: "top 75%",
+            toggleActions: "play none none none"
+        },
+        opacity: 0,
+        y: 30,
+        stagger: 0.15, 
+        duration: 0.8,
+        ease: "power2.out"
+    });
+});
