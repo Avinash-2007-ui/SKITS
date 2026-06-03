@@ -9,7 +9,7 @@ body {
 
 /* 1. Floating Glass Navigation */
 .glass-nav {
-    background: rgba(53, 53, 57, 0.513);
+    background: rgba(53, 53, 57, 0.4);
     /* The blur effect that makes it look like frosted glass */
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
