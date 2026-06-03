@@ -98,50 +98,10 @@
     <!-- EXACT MATCH 3D RADAR SPACE -->
     <section class="relative min-h-screen flex flex-col items-center justify-center text-center px-4 pt-20 overflow-hidden bg-[#070708]">
         
-        <!-- TRUE 3D ELEVATED HOLOGRAM STAGE -->
-        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 perspective-stage">
-            <div id="orbital-universe" class="relative w-[850px] h-[850px] transform-3d-system scale-0 opacity-0">
-                
-                <!-- LAYER 1: The Flat Radar Baseline Floor -->
-                <div class="absolute inset-0 radar-floor-grid">
-                    <!-- Topographic radial vectors matching video background -->
-                    <div class="radar-radial-line angle-1"></div>
-                    <div class="radar-radial-line angle-2"></div>
-                    <div class="radar-radial-line angle-3"></div>
-                </div>
-                
-                <!-- LAYER 2: The Main Elevated Telemetry Ring (Lifted UP on the Z-Axis) -->
-                <div class="radar-elevated-ring-wrapper">
-                    <div class="main-orange-ring">
-                        <!-- Floating Data Nodes riding along the rim -->
-                        <div class="rim-node node-orange"></div>
-                        <div class="rim-node node-white"></div>
-                        
-                        <!-- VERTICAL STANDING GLASS PANELS (The curved charts at the front of the image) -->
-                        <div class="vertical-glass-panel panel-left">
-                            <div class="panel-chart-line"></div>
-                        </div>
-                        <div class="vertical-glass-panel panel-center">
-                            <div class="panel-chart-line spec-curve"></div>
-                        </div>
-                        <div class="vertical-glass-panel panel-right">
-                            <div class="panel-chart-line"></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- LAYER 3: Inner Micro-Data Cluster Ring (Floating slightly lower than the main ring) -->
-                <div class="inner-floating-cluster">
-                    <div class="cluster-core-dot"></div>
-                    <div class="constellation-particle p1"></div>
-                    <div class="constellation-particle p2"></div>
-                    <div class="constellation-particle p3"></div>
-                </div>
+        <div class="absolute inset-0 w-full h-full pointer-events-none z-0" id="canvas-3d-stage"></div>
+        
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(234,88,12,0.04)_0,transparent_60%)] pointer-events-none z-0"></div>
 
-            </div>
-        </div>
-
-        <!-- HERO CONTENT CONTAINER (Perfectly matches text placement inside the video) -->
         <div id="hero-content" class="max-w-4xl z-10 opacity-0 transform translate-y-10">
             <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-500/10 bg-orange-500/5 text-xs font-semibold text-orange-500/80 mb-6 tracking-wide uppercase">
                 <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span> 
@@ -166,7 +126,7 @@
             </div>
         </div>
     </section>
-
+    
     <!-- METRICS BANNER -->
     <section class="bg-zinc-950 border-y border-zinc-800/60 py-16 relative z-10">
         <div class="max-w-6xl mx-auto px-6">
@@ -273,6 +233,7 @@
     
     <!-- Link your JS files here at the bottom -->
     <script src="translate.js"></script>
-    <script src="GASP.js"></script> 
+    <script src="GASP.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> 
 </body>
 </html>

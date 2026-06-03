@@ -74,46 +74,132 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-/* ==========================================================================
-   GSAP MATCH SEQUENCE FOR SKITS_FIRST_STYLE_3 VIDEO MATCH
-   ========================================================================== */
-
 window.addEventListener('DOMContentLoaded', () => {
+    // 1. CHOREOGRAPH INITIAL ENTRANCE ANCHORS VIA GSAP
     gsap.registerPlugin(ScrollTrigger);
     const tl = gsap.timeline();
     
-    // 1. CLEAR THE VISUAL PRELOADER FIELD FIRST
     tl.to("#preloader", {
         opacity: 0,
-        duration: 0.7,
+        duration: 0.6,
         ease: "power2.inOut",
-        onComplete: () => {
-            document.getElementById("preloader").style.display = "none"; 
-        }
+        onComplete: () => { document.getElementById("preloader").style.display = "none"; }
     })
-    
-    // 2. TRIGGER THE 3D RADAR SYSTEM TO INTERSECT THE STAGE
-    // Scales and blossoms open with an exponential deceleration curve
-    .to("#orbital-universe", {
-        scale: 1,
-        opacity: 1,
-        duration: 2.2,
-        ease: "power4.out"
-    }, "-=0.2")
-    
-    // 3. INTRO TEXT DRIFTS AND FADES UPWARDS (Synced exactly with video timing)
     .to("#hero-content", {
         opacity: 1,
         y: 0,
-        duration: 1.6,
+        duration: 1.4,
         ease: "power3.out"
-    }, "-=1.7") // Starts early so text reveals itself right as the rings pass through it
+    }, "-=0.2");
+
+    // 2. INITIALIZE INTUITIVE THREE.JS ENGINE SCENERY
+    const stage = document.getElementById('canvas-3d-stage');
+    if (!stage) return;
+
+    const scene = new THREE.Scene();
     
-    // 4. LOWER THE COMPONENT ACCESS HEADER STRIP
-    .to("#navbar", {
-        opacity: 1,
-        y: 0,
-        duration: 0.9,
-        ease: "power2.out"
-    }, "-=1.1");
+    // Set up camera positioning matching the video perspective plane
+    const camera = new THREE.PerspectiveCamera(60, stage.clientWidth / stage.clientHeight, 0.1, 1000);
+    camera.position.set(0, 5, 8);
+    camera.lookAt(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(stage.clientWidth, stage.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    stage.appendChild(renderer.domElement);
+
+    // Group elements to animate everything smoothly on entry if needed
+    const orbitalGroup = new THREE.Group();
+    orbitalGroup.rotation.x = -0.2; // Tilted horizon axis adjustment
+    scene.add(orbitalGroup);
+
+    // HELPER: Generate crisp vector tracing outlines
+    function buildWireframeCircle(radius, steps, colorHex, dashed = false) {
+        const points = [];
+        for (let i = 0; i <= steps; i++) {
+            const theta = (i / steps) * Math.PI * 2;
+            points.push(new THREE.Vector3(Math.cos(theta) * radius, 0, Math.sin(theta) * radius));
+        }
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        let material;
+        if (dashed) {
+            material = new THREE.LineDashedMaterial({ color: colorHex, dashSize: 0.2, gapSize: 0.1, transparent: true, opacity: 0.3 });
+        } else {
+            material = new THREE.LineBasicMaterial({ color: colorHex, transparent: true, opacity: 0.4 });
+        }
+        const line = new THREE.Line(geometry, material);
+        if (dashed) line.computeLineDistances();
+        return line;
+    }
+
+    // LAYER A: Flat Ground Radar Reference Map
+    const baseFloorGrid = buildWireframeCircle(3.5, 64, 0x3f3f46, false);
+    orbitalGroup.add(baseFloorGrid);
+
+    // LAYER B: Main Floating Telemetry Track (Elevated on the local Y-axis)
+    const elevatedRingTrack = new THREE.Group();
+    elevatedRingTrack.position.y = 0.6; // Lifts this entire ring subsystem into mid-air
+    orbitalGroup.add(elevatedRingTrack);
+
+    const orangeCircle = buildWireframeCircle(2.5, 64, 0xea580c, false);
+    elevatedRingTrack.add(orangeCircle);
+
+    // LAYER C: Standing Holographic Data Panels (Constructing true perpendicular planes)
+    const panelCount = 3;
+    const panels = [];
+    for (let i = 0; i < panelCount; i++) {
+        const panelGeometry = new THREE.PlaneGeometry(0.8, 0.4);
+        const panelMaterial = new THREE.MeshBasicMaterial({
+            color: 0xea580c,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.15,
+            wireframe: true
+        });
+        const mesh = new THREE.Mesh(panelGeometry, panelMaterial);
+        
+        // Arrange sequentially along the circumference angle paths
+        const angle = (i / panelCount) * Math.PI * 0.5 - 0.4; 
+        mesh.position.set(Math.cos(angle) * 2.5, 0.2, Math.sin(angle) * 2.5);
+        mesh.rotation.y = -angle + Math.PI / 2; // Direct vector facing
+        elevatedRingTrack.add(mesh);
+        panels.push(mesh);
+    }
+
+    // LAYER D: Orbiting Telemetry Data Marker Nodes
+    const particleGeo = new THREE.SphereGeometry(0.04, 8, 8);
+    const particleMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const movingNode = new THREE.Mesh(particleGeo, particleMat);
+    elevatedRingTrack.add(movingNode);
+
+    // LAYER E: Core Center Target Grid System
+    const innerRingTrack = buildWireframeCircle(1.2, 32, 0x71717a, true);
+    innerRingTrack.position.y = 0.2;
+    orbitalGroup.add(innerRingTrack);
+
+    // 3. CONTINUOUS RENDERING LOOP & PERSPECTIVE FLUIDITY
+    let clock = new THREE.Clock();
+
+    function renderFramePhysics() {
+        requestAnimationFrame(renderFramePhysics);
+        const elapsedTime = clock.getElapsedTime();
+
+        // Rotate separate track vectors independently at unique, variable rates
+        elevatedRingTrack.rotation.y = elapsedTime * 0.15;
+        innerRingTrack.rotation.y = -elapsedTime * 0.3;
+        
+        // Animate the single white pulse tracking around its circular orbit vector path
+        const particleAngle = elapsedTime * 0.8;
+        movingNode.position.set(Math.cos(particleAngle) * 2.5, 0, Math.sin(particleAngle) * 2.5);
+
+        renderer.render(scene, camera);
+    }
+    renderFramePhysics();
+
+    // Responsive window resizing listener hook
+    window.addEventListener('resize', () => {
+        camera.aspect = stage.clientWidth / stage.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(stage.clientWidth, stage.clientHeight);
+    });
 });
