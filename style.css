@@ -106,80 +106,125 @@ body {
 }
 
 /* ==========================================================================
-   3D HARDWARE-ACCELERATED ORBITAL RINGS
+   PRODUCTION EXACT MATCH ORBITAL ARCHITECTURE (FROM VIDEO)
    ========================================================================== */
 
-.perspective-container {
-    perspective: 1200px; /* Dictates how deep the 3D tilt feels */
+/* The 3D stage viewport perspective */
+.perspective-stage {
+    perspective: 1400px;
+    perspective-origin: center 45%;
 }
 
-.transform-3d {
+/* Force elements to behave as real flat intersecting surfaces in 3D space */
+.transform-3d-system {
     transform-style: preserve-3d;
+    transform: rotateX(72deg) rotateZ(0deg);
 }
 
-/* Base properties for all ring rings */
-.orbital-ring {
+/* --- THE BLUEPRINT BACKGROUND LINES --- */
+.radar-blueprint-grid {
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    background: 
+        radial-gradient(circle, transparent 20%, #070708 100%),
+        radial-gradient(circle, transparent 0%, transparent 30%, rgba(255, 255, 255, 0.01) 31%, transparent 32%),
+        radial-gradient(circle, transparent 0%, transparent 60%, rgba(234, 88, 12, 0.02) 61%, transparent 62%);
+    background-size: 100% 100%;
+}
+
+/* Shared structural layer properties */
+.radar-layer {
     position: absolute;
     inset: 0;
     border-radius: 50%;
     transform-style: preserve-3d;
-    backface-visibility: hidden;
 }
 
-/* Individual Ring Tilts & Direct Rotational Speeds */
-.ring-outer {
-    border: 1px solid rgba(255, 255, 255, 0.04);
-    transform: rotateX(68deg) rotateY(-10deg) rotateZ(0deg);
-    animation: spin-clockwise 45s linear infinite;
+/* --- ROTATIONAL ENGINE SPEED SLOTS --- */
+.layer-slow-outer {
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    animation: radar-spin-clockwise 60s linear infinite;
 }
 
-.ring-mid {
-    margin: 60px;
-    border: 1px solid rgba(249, 115, 22, 0.08);
-    transform: rotateX(68deg) rotateY(15deg) rotateZ(0deg);
-    animation: spin-counter-clockwise 35s linear infinite;
+.layer-dense-cluster {
+    margin: 120px;
+    animation: radar-spin-counter 45s linear infinite;
 }
 
-.ring-inner {
-    margin: 140px;
-    border: 1px dashed rgba(255, 255, 255, 0.03);
-    transform: rotateX(68deg) rotateY(-5deg) rotateZ(0deg);
-    animation: spin-clockwise 20s linear infinite;
+.layer-fast-inner {
+    margin: 260px;
+    border: 1px dashed rgba(234, 88, 12, 0.04);
+    animation: radar-spin-clockwise 18s linear infinite;
 }
 
-/* Subtle dashed tech indicator inside the mid-ring */
-.orbital-dashed-overlay {
+/* --- SPECIFIC ARC & GLOW OVERLAYS --- */
+.tech-arc {
     position: absolute;
-    inset: -2px;
+    inset: -1px;
     border-radius: 50%;
-    border: 1px dashed rgba(249, 115, 22, 0.15);
+}
+.arc-orange-1 {
+    border-top: 2px solid rgba(234, 88, 12, 0.4);
+    border-right: 2px solid transparent;
     mask-image: radial-gradient(circle, transparent 50%, black 100%);
 }
+.arc-orange-2 {
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    border-left: 2px solid transparent;
+}
 
-/* --- TELEMETRY DATA DATA NODES --- */
-.orbital-node {
+/* --- TELEMETRY GRAPH DATA DOTS --- */
+.data-pulse {
     position: absolute;
-    width: 6px;
-    height: 6px;
+    width: 4px;
+    height: 4px;
     background-color: #fff;
     border-radius: 50%;
-    transform: translate(-50%, -50%);
+}
+.pulse-alpha { top: 0; left: 50%; box-shadow: 0 0 10px 2px #fff; }
+.pulse-beta { top: 50%; left: 100%; background-color: #ea580c; box-shadow: 0 0 12px 3px #ea580c; }
+.pulse-gamma { bottom: 15%; left: 15%; background-color: #f59e0b; box-shadow: 0 0 10px #f59e0b; }
+
+/* --- CONSTELLATION MAPPING GENERATOR --- */
+.cluster-dot {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background-color: rgba(245, 158, 11, 0.8);
+    border-radius: 50%;
+    box-shadow: 0 0 6px #f59e0b;
+}
+.dot-pos-1 { top: 20%; left: 30%; }
+.dot-pos-2 { top: 25%; left: 38%; }
+.dot-pos-3 { top: 70%; left: 60%; }
+.dot-pos-4 { top: 62%; left: 72%; }
+.dot-pos-5 { top: 40%; left: 50%; background-color: #fff; box-shadow: 0 0 8px #fff; }
+
+/* Connecting vector tracking line indicators */
+.cluster-line {
+    position: absolute;
+    background-color: rgba(234, 88, 12, 0.08);
+    height: 1px;
+    transform-origin: left center;
+}
+.line-1-2 {
+    top: 20%; left: 30%;
+    width: 80px;
+    transform: rotate(28deg);
+}
+.line-3-4 {
+    top: 70%; left: 60%;
+    width: 110px;
+    transform: rotate(-35deg);
 }
 
-/* Positioning nodes at different geometric anchor vectors */
-.node-1 { top: 0%; left: 50%; box-shadow: 0 0 12px #fff; }
-.node-2 { top: 100%; left: 50%; background-color: #f97316; box-shadow: 0 0 12px #f97316; }
-.node-3 { top: 50%; left: 0%; background-color: #f97316; box-shadow: 0 0 10px #f97316; }
-.node-4 { top: 30%; left: 93.3%; }
-.node-5 { top: 50%; left: 100%; box-shadow: 0 0 12px #fff; }
-
-/* --- 3D ROTATION ENGINE MATH --- */
-@keyframes spin-clockwise {
-    from { transform: rotateX(68deg) rotateY(var(--tw-rotate-y, 0deg)) rotateZ(0deg); }
-    to { transform: rotateX(68deg) rotateY(var(--tw-rotate-y, 0deg)) rotateZ(360deg); }
+/* --- THE PHYSICS ROTATION CORE --- */
+@keyframes radar-spin-clockwise {
+    from { transform: rotateZ(0deg); }
+    to { transform: rotateZ(360deg); }
 }
 
-@keyframes spin-counter-clockwise {
-    from { transform: rotateX(68deg) rotateY(var(--tw-rotate-y, 0deg)) rotateZ(360deg); }
-    to { transform: rotateX(68deg) rotateY(var(--tw-rotate-y, 0deg)) rotateZ(0deg); }
+@keyframes radar-spin-counter {
+    from { transform: rotateZ(360deg); }
+    to { transform: rotateZ(0deg); }
 }
