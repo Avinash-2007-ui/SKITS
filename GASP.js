@@ -94,23 +94,43 @@ window.addEventListener('DOMContentLoaded', () => {
     };
     // =======================================================================
 
-    // 1. GSAP ENTRANCE TIMELINE
+    // 1. GSAP ENTRANCE TIMELINE (Cinematic Reveal)
     gsap.registerPlugin(ScrollTrigger);
     const tl = gsap.timeline();
     
+    // Instantly strip the old CSS block-fade so we can animate individual elements
+    gsap.set("#hero-content", { opacity: 1, y: 0 }); 
+
     tl.to("#preloader", {
         opacity: 0,
         duration: 0.6,
         ease: "power2.inOut",
         onComplete: () => { document.getElementById("preloader").style.display = "none"; }
     })
-    .to("#hero-content", {
-        opacity: 1,
-        y: 0,
-        duration: 1.4,
-        ease: "power3.out"
-    }, "-=0.2");
-
+    // Step 1: Slide in the "Enterprise Grade Systems" pill
+    .fromTo("#hero-content > span", 
+        { opacity: 0, y: 20 }, 
+        { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 
+        "-=0.2"
+    )
+    // Step 2: The Video-Style Reformation (Blur & Scale in) for the H1
+    .fromTo("#hero-content h1", 
+        { opacity: 0, y: 30, scale: 0.95, filter: "blur(12px)" }, 
+        { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", duration: 1.2, ease: "power3.out" }, 
+        "-=0.6"
+    )
+    // Step 3: Smooth fade-up for the description paragraph
+    .fromTo("#hero-content p", 
+        { opacity: 0, y: 20 }, 
+        { opacity: 1, y: 0, duration: 1, ease: "power2.out" }, 
+        "-=0.8"
+    )
+    // Step 4: Stagger the buttons so they pop up one after the other
+    .fromTo("#hero-content button", 
+        { opacity: 0, y: 15 }, 
+        { opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: "power2.out" }, 
+        "-=0.8"
+    );
     // 2. THREE.JS ENGINE SETUP
     const stage = document.getElementById('canvas-3d-stage');
     if (!stage) return;
