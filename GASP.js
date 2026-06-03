@@ -85,16 +85,16 @@ window.addEventListener('DOMContentLoaded', () => {
     const CONFIG = {
         gearSilver: 0xcccccc,
         gearCopper: 0xc06020,
-        gearDark: 0x333333,
+        gearDark: 0x444444, // Lightened slightly so they don't get lost in the dark
         ringOuter: 0xea580c,   
         ringInner: 0xffffff,   
         
-        gearSpeed: 0.3,        // Sped up slightly for better mechanical feel
-        hudSpinSpeed: 0.1,     
+        gearSpeed: 0.3,        
+        hudSpinSpeed: 0.05,    // Slowed down slightly for a massive, heavy radar feel 
         cameraPanSpeed: 0.05,  
 
         glowIntensity: 0.7,    
-        ambientLight: 0.5      
+        ambientLight: 0.8      // Boosted base light so you can actually see the gear details
     };
     // =======================================================================
 
@@ -121,11 +121,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x070708);
-    scene.fog = new THREE.FogExp2(0x070708, 0.015); 
+    scene.fog = new THREE.FogExp2(0x070708, 0.012); // Pushed fog back so we can see the massive rings
     
-    // Adjusted camera to capture the floor gears and floating rings perfectly
     const camera = new THREE.PerspectiveCamera(50, stage.clientWidth / stage.clientHeight, 0.1, 200);
-    camera.position.set(0, 16, 35); 
+    camera.position.set(0, 12, 35); 
     camera.lookAt(0, 0, 0); 
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -143,7 +142,7 @@ window.addEventListener('DOMContentLoaded', () => {
     keyLight.castShadow = true;
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(CONFIG.ringOuter, 4.0);
+    const rimLight = new THREE.DirectionalLight(CONFIG.ringOuter, 5.0);
     rimLight.position.set(-20, 5, -20);
     scene.add(rimLight);
 
@@ -159,7 +158,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // --- LAYER 1: THE INDUSTRIAL GRID FLOOR ---
     const floorGroup = new THREE.Group();
-    floorGroup.position.y = -6.0; // Pushed deep to the bottom
+    floorGroup.position.y = -8.0; 
     scene.add(floorGroup);
 
     const gridHelper = new THREE.GridHelper(150, 150, 0x333333, 0x111111);
@@ -169,7 +168,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // --- LAYER 2: THE HORIZONTAL GEAR MATRIX (Hardware) ---
     const gearSystem = new THREE.Group();
-    gearSystem.position.set(0, -4, -5); // Tucked nicely below the text
+    // Pushed down and scaled up by 40% so they look massive
+    gearSystem.position.set(0, -6, -8); 
+    gearSystem.scale.set(1.4, 1.4, 1.4);
     scene.add(gearSystem);
 
     function buildDetailedGear(radius, teethCount, extrusionDepth, colorHex, hasSpokes) {
@@ -207,7 +208,6 @@ window.addEventListener('DOMContentLoaded', () => {
         const extrudeSettings = { depth: extrusionDepth, bevelEnabled: true, bevelSegments: 2, steps: 1, bevelSize: 0.05, bevelThickness: 0.05 };
         const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
         
-        // BUG FIX: Center the geometry, then permanently rotate the geometry itself flat!
         geometry.center(); 
         geometry.rotateX(-Math.PI / 2); 
         
@@ -216,11 +216,9 @@ window.addEventListener('DOMContentLoaded', () => {
         bodyMesh.receiveShadow = true;
         gearAssembly.add(bodyMesh);
 
-        // Cylinder stands on the Y axis automatically, matching the newly flattened gear
         const hubMesh = new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.25, radius * 0.25, extrusionDepth + 0.2, 32), metalMaterial);
         gearAssembly.add(hubMesh);
 
-        // Return the assembly. No rotation needed here, it's natively flat!
         return gearAssembly;
     }
 
@@ -240,7 +238,6 @@ window.addEventListener('DOMContentLoaded', () => {
         return gear;
     }
 
-    // Generate gears
     const g1 = buildDetailedGear(4.0, 24, 1.0, CONFIG.gearSilver, true);
     g1.position.set(0, 0, 0);
     g1.userData = { radius: 4.0, teeth: 24, isDriver: true };
@@ -254,29 +251,30 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // --- LAYER 3: THE FLOATING ORBITAL HUD (Software) ---
     const orbitalSystem = new THREE.Group();
-    orbitalSystem.position.set(0, 6, -3); // Floating safely above the text
+    // Pushed back and lifted up so it wraps around the text perfectly
+    orbitalSystem.position.set(0, 4, -12); 
     orbitalSystem.rotation.x = -0.15;
     scene.add(orbitalSystem);
 
     function buildGlowingRing(radius, colorHex, isDashed = false) {
         const points = [];
-        for (let i = 0; i <= 64; i++) {
-            const theta = (i / 64) * Math.PI * 2;
-            // Native XZ plane layout
+        for (let i = 0; i <= 128; i++) { // Increased resolution for massive rings
+            const theta = (i / 128) * Math.PI * 2;
             points.push(new THREE.Vector3(Math.cos(theta) * radius, 0, Math.sin(theta) * radius));
         }
         const geometry = new THREE.BufferGeometry().setFromPoints(points);
         let mat = isDashed 
-            ? new THREE.LineDashedMaterial({ color: colorHex, dashSize: 0.3, gapSize: 0.2, transparent: true, opacity: 0.9 })
+            ? new THREE.LineDashedMaterial({ color: colorHex, dashSize: 0.5, gapSize: 0.3, transparent: true, opacity: 0.9 })
             : new THREE.LineBasicMaterial({ color: colorHex, transparent: true, opacity: 0.6 });
         const line = new THREE.Line(geometry, mat);
         if (isDashed) line.computeLineDistances();
         return line;
     }
 
-    const ring1 = buildGlowingRing(7.0, CONFIG.ringOuter, false); 
-    const ring2 = buildGlowingRing(6.5, CONFIG.ringOuter, true);  
-    const ring3 = buildGlowingRing(4.5, CONFIG.ringInner, true);  
+    // MASSIVE SCALE INCREASES (From 7.0 to 18.0)
+    const ring1 = buildGlowingRing(18.0, CONFIG.ringOuter, false); 
+    const ring2 = buildGlowingRing(17.0, CONFIG.ringOuter, true);  
+    const ring3 = buildGlowingRing(12.0, CONFIG.ringInner, true);  
     
     orbitalSystem.add(ring1);
     orbitalSystem.add(ring2);
@@ -287,15 +285,16 @@ window.addEventListener('DOMContentLoaded', () => {
     
     function createDataNode(color, size, x) {
         const mesh = new THREE.Mesh(new THREE.PlaneGeometry(size, size), new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide }));
-        mesh.rotation.x = -Math.PI / 2; // Lay the marker flat
+        mesh.rotation.x = -Math.PI / 2; 
         mesh.position.set(x, 0, 0);
         nodeGroup.add(mesh);
         return mesh;
     }
     
-    createDataNode(CONFIG.ringInner, 0.2, 7.0);
-    createDataNode(CONFIG.ringOuter, 0.15, 7.0, 0.5); 
-    createDataNode(CONFIG.ringInner, 0.1, 4.5); 
+    // Nodes updated to match the new massive ring radii
+    createDataNode(CONFIG.ringInner, 0.4, 18.0);
+    createDataNode(CONFIG.ringOuter, 0.3, 18.0, 0.8); 
+    createDataNode(CONFIG.ringInner, 0.25, 12.0); 
 
     // --- 4. RENDER LOOP ---
     let clock = new THREE.Clock();
@@ -304,7 +303,6 @@ window.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(renderFramePhysics);
         const time = clock.getElapsedTime();
 
-        // Spin the gears purely on the global Y axis like a turntable
         g1.rotation.y = time * CONFIG.gearSpeed; 
         
         gears.forEach((gear, index) => {
