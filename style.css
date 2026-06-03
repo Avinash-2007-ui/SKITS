@@ -1,0 +1,31 @@
+/* =========================================
+   SKITS - Custom Infrastructure Styles
+   ========================================= */
+
+/* Base Theme */
+body {
+    background-color: #0a0a0c;
+}
+
+/* 1. Floating Glass Navigation */
+.glass-nav {
+    background: rgba(10, 10, 12, 0.4);
+    /* The blur effect that makes it look like frosted glass */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* 2. Bento Box Service Cards */
+.bento-card {
+    background: rgba(20, 20, 25, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    /* Tells the browser to animate the border and shadow smoothly */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover state for the Bento Cards */
+.bento-card:hover {
+    border-color: rgba(249, 115, 22, 0.2);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+}
