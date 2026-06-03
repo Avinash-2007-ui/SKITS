@@ -81,27 +81,22 @@ window.addEventListener('DOMContentLoaded', () => {
     
     // =======================================================================
     // ⚙️ THE SAFE CONFIGURATION ZONE ⚙️
-    // Change your colors, speeds, and lighting here without breaking the math!
     // =======================================================================
     const CONFIG = {
-        // Colors
         gearSilver: 0xcccccc,
         gearCopper: 0xc06020,
         gearDark: 0x333333,
-        ringOuter: 0xea580c,   // Orange HUD
-        ringInner: 0xffffff,   // White HUD
+        ringOuter: 0xea580c,   
+        ringInner: 0xffffff,   
         
-        // Speeds (Lower is slower)
-        gearSpeed: 0.2,        
+        gearSpeed: 0.3,        // Sped up slightly for better mechanical feel
         hudSpinSpeed: 0.1,     
         cameraPanSpeed: 0.05,  
 
-        // Lighting & Glow
-        glowIntensity: 0.8,    // How much the rings glow
-        ambientLight: 0.5      // Base brightness of the scene
+        glowIntensity: 0.7,    
+        ambientLight: 0.5      
     };
     // =======================================================================
-
 
     // 1. GSAP ENTRANCE TIMELINE
     gsap.registerPlugin(ScrollTrigger);
@@ -120,18 +115,18 @@ window.addEventListener('DOMContentLoaded', () => {
         ease: "power3.out"
     }, "-=0.2");
 
-
     // 2. THREE.JS ENGINE SETUP
     const stage = document.getElementById('canvas-3d-stage');
     if (!stage) return;
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x070708);
-    scene.fog = new THREE.FogExp2(0x070708, 0.018); 
+    scene.fog = new THREE.FogExp2(0x070708, 0.015); 
     
+    // Adjusted camera to capture the floor gears and floating rings perfectly
     const camera = new THREE.PerspectiveCamera(50, stage.clientWidth / stage.clientHeight, 0.1, 200);
-    camera.position.set(0, 10, 30); 
-    camera.lookAt(0, 2, 0); 
+    camera.position.set(0, 16, 35); 
+    camera.lookAt(0, 0, 0); 
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(stage.clientWidth, stage.clientHeight);
@@ -164,7 +159,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // --- LAYER 1: THE INDUSTRIAL GRID FLOOR ---
     const floorGroup = new THREE.Group();
-    floorGroup.position.y = -5.0; 
+    floorGroup.position.y = -6.0; // Pushed deep to the bottom
     scene.add(floorGroup);
 
     const gridHelper = new THREE.GridHelper(150, 150, 0x333333, 0x111111);
@@ -172,9 +167,9 @@ window.addEventListener('DOMContentLoaded', () => {
     gridHelper.material.opacity = 0.5;
     floorGroup.add(gridHelper);
 
-    // --- LAYER 2: THE HORIZONTAL GEAR MATRIX ---
+    // --- LAYER 2: THE HORIZONTAL GEAR MATRIX (Hardware) ---
     const gearSystem = new THREE.Group();
-    gearSystem.position.set(0, -2, -3);
+    gearSystem.position.set(0, -4, -5); // Tucked nicely below the text
     scene.add(gearSystem);
 
     function buildDetailedGear(radius, teethCount, extrusionDepth, colorHex, hasSpokes) {
@@ -211,19 +206,21 @@ window.addEventListener('DOMContentLoaded', () => {
 
         const extrudeSettings = { depth: extrusionDepth, bevelEnabled: true, bevelSegments: 2, steps: 1, bevelSize: 0.05, bevelThickness: 0.05 };
         const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        
+        // BUG FIX: Center the geometry, then permanently rotate the geometry itself flat!
         geometry.center(); 
+        geometry.rotateX(-Math.PI / 2); 
         
         const bodyMesh = new THREE.Mesh(geometry, metalMaterial);
         bodyMesh.castShadow = true;
         bodyMesh.receiveShadow = true;
         gearAssembly.add(bodyMesh);
 
+        // Cylinder stands on the Y axis automatically, matching the newly flattened gear
         const hubMesh = new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.25, radius * 0.25, extrusionDepth + 0.2, 32), metalMaterial);
-        hubMesh.rotation.x = Math.PI / 2;
         gearAssembly.add(hubMesh);
 
-        // LAYS THE GEAR FLAT ON THE FLOOR
-        gearAssembly.rotation.x = -Math.PI / 2;
+        // Return the assembly. No rotation needed here, it's natively flat!
         return gearAssembly;
     }
 
@@ -233,15 +230,17 @@ window.addEventListener('DOMContentLoaded', () => {
         const dist = parentGear.userData.radius + radius - 0.15; 
         const x = parentGear.position.x + Math.cos(angleFromParent) * dist;
         const z = parentGear.position.z + Math.sin(angleFromParent) * dist;
+        
         const gear = buildDetailedGear(radius, teeth, 0.8, color, hasSpokes);
         gear.position.set(x, parentGear.position.y + yOffset, z);
         gear.userData = { radius: radius, teeth: teeth, parent: parentGear, ratio: parentGear.userData.teeth / teeth };
+        
         gearSystem.add(gear);
         gears.push(gear);
         return gear;
     }
 
-    // Generating the gears using your CONFIG colors
+    // Generate gears
     const g1 = buildDetailedGear(4.0, 24, 1.0, CONFIG.gearSilver, true);
     g1.position.set(0, 0, 0);
     g1.userData = { radius: 4.0, teeth: 24, isDriver: true };
@@ -253,9 +252,9 @@ window.addEventListener('DOMContentLoaded', () => {
     const g4 = addMeshedGear(g1, 3.0, 18, CONFIG.gearDark, true, Math.PI - 0.3, 0); 
     const g5 = addMeshedGear(g4, 2.0, 12, CONFIG.gearCopper, false, Math.PI + 0.2, 0);
 
-    // --- LAYER 3: THE FLOATING ORBITAL HUD ---
+    // --- LAYER 3: THE FLOATING ORBITAL HUD (Software) ---
     const orbitalSystem = new THREE.Group();
-    orbitalSystem.position.set(0, 7.5, -2);
+    orbitalSystem.position.set(0, 6, -3); // Floating safely above the text
     orbitalSystem.rotation.x = -0.15;
     scene.add(orbitalSystem);
 
@@ -263,6 +262,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const points = [];
         for (let i = 0; i <= 64; i++) {
             const theta = (i / 64) * Math.PI * 2;
+            // Native XZ plane layout
             points.push(new THREE.Vector3(Math.cos(theta) * radius, 0, Math.sin(theta) * radius));
         }
         const geometry = new THREE.BufferGeometry().setFromPoints(points);
@@ -274,10 +274,9 @@ window.addEventListener('DOMContentLoaded', () => {
         return line;
     }
 
-    // Using your CONFIG colors for the HUD
-    const ring1 = buildGlowingRing(6.0, CONFIG.ringOuter, false); 
-    const ring2 = buildGlowingRing(5.5, CONFIG.ringOuter, true);  
-    const ring3 = buildGlowingRing(3.5, CONFIG.ringInner, true);  
+    const ring1 = buildGlowingRing(7.0, CONFIG.ringOuter, false); 
+    const ring2 = buildGlowingRing(6.5, CONFIG.ringOuter, true);  
+    const ring3 = buildGlowingRing(4.5, CONFIG.ringInner, true);  
     
     orbitalSystem.add(ring1);
     orbitalSystem.add(ring2);
@@ -288,15 +287,15 @@ window.addEventListener('DOMContentLoaded', () => {
     
     function createDataNode(color, size, x) {
         const mesh = new THREE.Mesh(new THREE.PlaneGeometry(size, size), new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide }));
-        mesh.rotation.x = Math.PI / 2;
+        mesh.rotation.x = -Math.PI / 2; // Lay the marker flat
         mesh.position.set(x, 0, 0);
         nodeGroup.add(mesh);
         return mesh;
     }
     
-    createDataNode(CONFIG.ringInner, 0.2, 6.0);
-    createDataNode(CONFIG.ringOuter, 0.15, 6.0, 0.5); 
-    createDataNode(CONFIG.ringInner, 0.1, 3.5); 
+    createDataNode(CONFIG.ringInner, 0.2, 7.0);
+    createDataNode(CONFIG.ringOuter, 0.15, 7.0, 0.5); 
+    createDataNode(CONFIG.ringInner, 0.1, 4.5); 
 
     // --- 4. RENDER LOOP ---
     let clock = new THREE.Clock();
@@ -305,17 +304,17 @@ window.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(renderFramePhysics);
         const time = clock.getElapsedTime();
 
-        // BUG FIX: Rotating on the Z axis makes the flat gears spin like records!
-        g1.rotation.z = time * CONFIG.gearSpeed; 
+        // Spin the gears purely on the global Y axis like a turntable
+        g1.rotation.y = time * CONFIG.gearSpeed; 
         
         gears.forEach((gear, index) => {
             if (!gear.userData.isDriver && gear.userData.parent) {
-                const parentRot = gear.userData.parent.rotation.z;
-                gear.rotation.z = -(parentRot * gear.userData.ratio) + (index * 0.12);
+                const parentRot = gear.userData.parent.rotation.y;
+                gear.rotation.y = -(parentRot * gear.userData.ratio) + (index * 0.12);
             }
         });
 
-        // HUD Animation
+        // Spin HUD elements
         ring1.rotation.y = time * CONFIG.hudSpinSpeed;
         ring2.rotation.y = -time * (CONFIG.hudSpinSpeed * 1.5);
         ring3.rotation.y = time * (CONFIG.hudSpinSpeed * 2);
