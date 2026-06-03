@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
    GSAP MATCH SEQUENCE FOR SKITS_FIRST_STYLE_3 VIDEO MATCH
    ========================================================================== */
 window.addEventListener('DOMContentLoaded', () => {
-    // 1. GSAP ENTRANCE TIMELINE
+    // 1. GSAP ENTRANCE TIMELINE (Unchanged)
     gsap.registerPlugin(ScrollTrigger);
     const tl = gsap.timeline();
     
@@ -95,161 +95,138 @@ window.addEventListener('DOMContentLoaded', () => {
         ease: "power3.out"
     }, "-=0.2");
 
-    // 2. THREE.JS ENGINE SETUP
+    // 2. THREE.JS SOLID MECHANICAL ENGINE SETUP
     const stage = document.getElementById('canvas-3d-stage');
     if (!stage) return;
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x070708);
-    scene.fog = new THREE.FogExp2(0x070708, 0.035); 
+    scene.fog = new THREE.FogExp2(0x070708, 0.02); 
     
-    // Camera positioned for massive scale
-    const camera = new THREE.PerspectiveCamera(60, stage.clientWidth / stage.clientHeight, 0.1, 100);
-    camera.position.set(0, 1.8, 9.5); 
-    camera.lookAt(0, -0.5, 0); 
+    // Moved the camera up to look down at the gears, matching your reference image
+    const camera = new THREE.PerspectiveCamera(50, stage.clientWidth / stage.clientHeight, 0.1, 100);
+    camera.position.set(0, 12, 12); 
+    camera.lookAt(0, 0, 0); 
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
     renderer.setSize(stage.clientWidth, stage.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    
+    // Enable physical lighting and shadows
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     stage.appendChild(renderer.domElement);
 
-    // --- POST-PROCESSING: THE BLOOM (GLOW) ---
+    // --- STUDIO LIGHTING (Crucial for metallic reflections) ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4); 
+    scene.add(ambientLight);
+
+    const mainLight = new THREE.DirectionalLight(0xffffff, 2.0);
+    mainLight.position.set(10, 20, 10);
+    mainLight.castShadow = true;
+    scene.add(mainLight);
+
+    // Orange accent light to tie into the SKITS theme
+    const orangeLight = new THREE.PointLight(0xea580c, 5.0, 50);
+    orangeLight.position.set(-10, 5, -5);
+    scene.add(orangeLight);
+
+    // --- POST-PROCESSING (Subtle bloom for the metal highlights) ---
     const renderScene = new THREE.RenderPass(scene, camera);
     const bloomPass = new THREE.UnrealBloomPass(
         new THREE.Vector2(stage.clientWidth, stage.clientHeight),
-        1.5,  // Intensity
-        0.5,  // Spread
-        0.25  // Threshold
+        0.6,  // Lower intensity so it looks like metal, not neon
+        0.4, 
+        0.6   // High threshold so only the brightest reflections glow
     );
 
     const composer = new THREE.EffectComposer(renderer);
     composer.addPass(renderScene);
     composer.addPass(bloomPass);
 
-    const orbitalGroup = new THREE.Group();
-    orbitalGroup.rotation.x = -0.05; 
-    scene.add(orbitalGroup);
+    // --- PROCEDURAL 3D GEAR GENERATOR ---
+    function createGear(radius, teethCount, extrusionDepth, colorHex, metalness, roughness) {
+        const shape = new THREE.Shape();
+        const innerRadius = radius * 0.85; // Depth of the teeth
+        const step = (Math.PI * 2) / teethCount;
 
-    // --- MECHANICAL HELPER FUNCTIONS ---
-
-    // 1. Builds segmented mechanical arcs instead of full circles
-    function buildArc(radius, startAngle, endAngle, colorHex, opacity) {
-        const points = [];
-        const segments = 64; 
-        for (let i = 0; i <= segments; i++) {
-            const theta = startAngle + (i / segments) * (endAngle - startAngle);
-            points.push(new THREE.Vector3(Math.cos(theta) * radius, 0, Math.sin(theta) * radius));
+        // Mathematically draw the gear teeth
+        for (let i = 0; i < teethCount; i++) {
+            const angle = i * step;
+            shape.lineTo(Math.cos(angle - step/4) * innerRadius, Math.sin(angle - step/4) * innerRadius);
+            shape.lineTo(Math.cos(angle - step/5) * radius, Math.sin(angle - step/5) * radius);
+            shape.lineTo(Math.cos(angle + step/5) * radius, Math.sin(angle + step/5) * radius);
+            shape.lineTo(Math.cos(angle + step/4) * innerRadius, Math.sin(angle + step/4) * innerRadius);
         }
-        const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        const mat = new THREE.LineBasicMaterial({ color: colorHex, transparent: true, opacity: opacity });
-        return new THREE.Line(geometry, mat);
-    }
+        shape.closePath();
 
-    // 2. Builds mechanical gear teeth / compass ticks
-    function buildTicks(radius, tickLength, numTicks, colorHex, opacity) {
-        const points = [];
-        for (let i = 0; i < numTicks; i++) {
-            const theta = (i / numTicks) * Math.PI * 2;
-            // Inner point
-            points.push(new THREE.Vector3(Math.cos(theta) * radius, 0, Math.sin(theta) * radius));
-            // Outer point
-            points.push(new THREE.Vector3(Math.cos(theta) * (radius + tickLength), 0, Math.sin(theta) * (radius + tickLength)));
-        }
-        const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        const mat = new THREE.LineBasicMaterial({ color: colorHex, transparent: true, opacity: opacity });
-        return new THREE.LineSegments(geometry, mat); // LineSegments connects pairs of points
-    }
+        // Cut a mechanical axle hole in the center
+        const holePath = new THREE.Path();
+        holePath.absarc(0, 0, radius * 0.3, 0, Math.PI * 2, false);
+        shape.holes.push(holePath);
 
-    // 3. Builds radar crosshairs
-    function buildCrosshairs(radius, colorHex, opacity) {
-        const points = [
-            new THREE.Vector3(-radius, 0, 0), new THREE.Vector3(radius, 0, 0),
-            new THREE.Vector3(0, 0, -radius), new THREE.Vector3(0, 0, radius)
-        ];
-        const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        const mat = new THREE.LineBasicMaterial({ color: colorHex, transparent: true, opacity: opacity });
-        return new THREE.LineSegments(geometry, mat);
-    }
-
-    // --- LAYER 1: INDUSTRIAL RADAR FLOOR ---
-    const floorGroup = new THREE.Group();
-    floorGroup.position.y = -0.5;
-    orbitalGroup.add(floorGroup);
-
-    // Base Grid
-    const gridHelper = new THREE.GridHelper(80, 80, 0x1a1a1a, 0x0a0a0a);
-    gridHelper.material.transparent = true;
-    gridHelper.material.opacity = 0.5;
-    floorGroup.add(gridHelper);
-
-    // Mechanical Floor Elements
-    floorGroup.add(buildCrosshairs(15, 0x555555, 0.2));
-    floorGroup.add(buildTicks(4.0, 0.2, 120, 0x444444, 0.3)); // Fine inner gear
-    floorGroup.add(buildArc(6.0, 0, Math.PI * 2, 0x333333, 0.2)); // Faint full ring
-    floorGroup.add(buildArc(9.0, 0, Math.PI * 2, 0x222222, 0.2)); 
-
-    // --- LAYER 2: ELEVATED MECHANICAL UI RING ---
-    const elevatedRingTrack = new THREE.Group();
-    elevatedRingTrack.position.y = 0.6; 
-    orbitalGroup.add(elevatedRingTrack);
-
-    // Main Orange Mechanical Arcs (Broken circle effect)
-    elevatedRingTrack.add(buildArc(7.0, 0, Math.PI * 0.8, 0xea580c, 0.9));
-    elevatedRingTrack.add(buildArc(7.0, Math.PI * 0.9, Math.PI * 1.6, 0xea580c, 0.9));
-    elevatedRingTrack.add(buildArc(7.0, Math.PI * 1.7, Math.PI * 1.9, 0xea580c, 0.9));
-
-    // Outer gear ticks attached to the orange ring
-    elevatedRingTrack.add(buildTicks(7.1, 0.15, 72, 0xea580c, 0.5));
-
-    // Inner dashed technical ring
-    const innerTechGroup = new THREE.Group();
-    elevatedRingTrack.add(innerTechGroup);
-    innerTechGroup.add(buildArc(6.5, 0, Math.PI * 0.4, 0xffffff, 0.3));
-    innerTechGroup.add(buildArc(6.5, Math.PI * 1.0, Math.PI * 1.4, 0xffffff, 0.3));
-    innerTechGroup.add(buildTicks(6.5, 0.1, 36, 0xffffff, 0.4));
-
-
-    // --- LAYER 3: VERTICAL DATA PANELS ---
-    const panelCount = 3;
-    for (let i = 0; i < panelCount; i++) {
-        const panelGeometry = new THREE.PlaneGeometry(1.8, 1.0); 
-        const panelMaterial = new THREE.MeshBasicMaterial({
-            color: 0xea580c,
-            side: THREE.DoubleSide,
-            transparent: true,
-            opacity: 0.05, 
-            depthWrite: false
-        });
-        const mesh = new THREE.Mesh(panelGeometry, panelMaterial);
+        // Extrude the 2D drawing into a 3D block with beveled edges
+        const extrudeSettings = { 
+            depth: extrusionDepth, 
+            bevelEnabled: true, 
+            bevelSegments: 3, 
+            steps: 1, 
+            bevelSize: 0.1, 
+            bevelThickness: 0.1 
+        };
+        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
         
-        const edges = new THREE.EdgesGeometry(panelGeometry);
-        const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0xea580c, opacity: 0.6, transparent: true }));
-        mesh.add(line);
+        // Center the geometry so it rotates perfectly on its axis
+        geometry.center();
 
-        const angle = (i / panelCount) * Math.PI * 0.4 + (Math.PI * 0.3); 
-        mesh.position.set(Math.cos(angle) * 7.0, 0.5, Math.sin(angle) * 7.0);
-        mesh.rotation.y = -angle + Math.PI / 2; 
-        elevatedRingTrack.add(mesh);
+        // Realistic Metal Material
+        const material = new THREE.MeshStandardMaterial({ 
+            color: colorHex, 
+            metalness: metalness, 
+            roughness: roughness 
+        });
+
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        
+        // Rotate to lay flat on the floor
+        mesh.rotation.x = -Math.PI / 2;
+        return mesh;
     }
 
-    // --- LAYER 4: GEOMETRIC DATA NODES (No more planets) ---
-    const nodeGroup = new THREE.Group();
-    elevatedRingTrack.add(nodeGroup);
+    // --- BUILD THE INTERLOCKING GEAR TRAIN ---
+    const gearSystem = new THREE.Group();
+    // Shifted slightly to the right to frame the text nicely
+    gearSystem.position.set(2, -2, -2);
+    scene.add(gearSystem);
 
-    // Using PlaneGeometry rotated flat to look like digital UI markers instead of spheres
-    const createDataMarker = (color, size, x, z) => {
-        const geo = new THREE.PlaneGeometry(size, size);
-        const mat = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide });
-        const mesh = new THREE.Mesh(geo, mat);
-        mesh.rotation.x = Math.PI / 2; // Lay it flat on the ring
-        mesh.position.set(x, 0, z);
-        nodeGroup.add(mesh);
-        return mesh;
-    };
-    
-    createDataMarker(0xffffff, 0.15, 7.0, 0); // Primary white tracker square
-    createDataMarker(0xea580c, 0.1, 7.0, 0.4); // Orange trailing marker
-    createDataMarker(0xea580c, 0.08, 7.0, 0.7); // Orange trailing marker
+    // Materials based on your reference image
+    const SILVER = 0xdddddd;
+    const BRONZE = 0xea580c; // Adapted to SKITS Orange
+
+    // 1. Center Gear (Large, Silver)
+    const gearCenter = createGear(4.0, 24, 0.8, SILVER, 0.9, 0.3);
+    gearSystem.add(gearCenter);
+
+    // 2. Right Gear (Medium, Bronze) - Meshes with Center
+    const gearRight = createGear(2.5, 15, 0.6, BRONZE, 0.8, 0.4);
+    // Positioned exactly where the teeth intersect
+    gearRight.position.set(6.2, 0.5, 0); 
+    // Offset rotation so teeth slot into the gaps
+    gearRight.rotation.z = 0.1;
+    gearSystem.add(gearRight);
+
+    // 3. Top Left Gear (Small, Silver) - Meshes with Center
+    const gearTop = createGear(2.0, 12, 1.0, SILVER, 0.9, 0.2);
+    gearTop.position.set(-3.5, -0.4, -4.5);
+    gearTop.rotation.z = 0.2;
+    gearSystem.add(gearTop);
+
+    // 4. Floating Top Gear (Stacked on the Center Gear)
+    const gearStacked = createGear(1.8, 10, 0.4, BRONZE, 0.8, 0.4);
+    gearStacked.position.set(0, 1.0, 0);
+    gearSystem.add(gearStacked);
 
     // --- 3. HARDWARE ACCELERATED RENDER LOOP ---
     let clock = new THREE.Clock();
@@ -258,13 +235,21 @@ window.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(renderFramePhysics);
         const elapsedTime = clock.getElapsedTime();
 
-        // Complex mechanical counter-rotations
-        elevatedRingTrack.rotation.y = elapsedTime * 0.04;
-        innerTechGroup.rotation.y = -elapsedTime * 0.08; // Inner UI spins backward
-        floorGroup.rotation.y = -elapsedTime * 0.015; 
+        // Base speed
+        const speed = 0.5;
+
+        // GEAR RATIO MATH: 
+        // If the center gear has 24 teeth, and the right gear has 15 teeth, 
+        // the right gear must spin (24/15) times faster in the OPPOSITE direction to mesh perfectly.
         
-        // Data markers sliding along the track
-        nodeGroup.rotation.y = elapsedTime * 0.15;
+        gearCenter.rotation.z = elapsedTime * speed;
+        gearStacked.rotation.z = elapsedTime * speed; // Stacked on the same axle
+
+        gearRight.rotation.z = -(elapsedTime * speed * (24/15)) + 0.1; 
+        gearTop.rotation.z = -(elapsedTime * speed * (24/12)) + 0.2; 
+
+        // Very slow rotation of the entire system for a cinematic feel
+        gearSystem.rotation.y = elapsedTime * 0.05;
 
         composer.render();
     }
