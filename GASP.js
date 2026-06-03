@@ -48,3 +48,28 @@ window.addEventListener('DOMContentLoaded', () => {
         ease: "power2.out"
     });
 });
+// MOBILE INTERACTIVE NAVIGATION SCRIPT HOOK
+document.addEventListener('DOMContentLoaded', () => {
+    const toggleBtn = document.getElementById('mobile-menu-toggle');
+    const menuPanel = document.getElementById('mobile-menu-panel');
+
+    if (toggleBtn && menuPanel) {
+        toggleBtn.addEventListener('click', () => {
+            menuPanel.classList.toggle('hidden');
+            
+            // Optional: Changes hamburger icon to an 'X' close graphic when opened
+            const isHidden = menuPanel.classList.contains('hidden');
+            toggleBtn.innerHTML = isHidden 
+                ? `<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>`
+                : `<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>`;
+        });
+
+        // Close menu panel when any link inside it is tapped
+        menuPanel.querySelectorAll('a, button').forEach(link => {
+            link.addEventListener('click', () => {
+                menuPanel.classList.add('hidden');
+                toggleBtn.innerHTML = `<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>`;
+            });
+        });
+    }
+});
