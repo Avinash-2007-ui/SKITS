@@ -136,7 +136,7 @@ window.addEventListener('DOMContentLoaded', () => {
         new THREE.Vector2(stage.clientWidth, stage.clientHeight),
         0.8,  // Strength of glow
         0.5,  // Spread
-        0.65  // Threshold: Metal stays mostly solid, pure white/orange lines glow bright
+        0.65  // Threshold: Metal stays solid, pure white/orange lines glow bright
     );
     const composer = new THREE.EffectComposer(renderer);
     composer.addPass(renderScene);
@@ -194,8 +194,12 @@ window.addEventListener('DOMContentLoaded', () => {
         shape.holes.push(centerHole);
 
         const extrudeSettings = { depth: extrusionDepth, bevelEnabled: true, bevelSegments: 2, steps: 1, bevelSize: 0.05, bevelThickness: 0.05 };
-        const bodyMesh = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, extrudeSettings), metalMaterial);
-        bodyMesh.center();
+        
+        // BUG FIX: Center the geometry, not the mesh!
+        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        geometry.center(); 
+        
+        const bodyMesh = new THREE.Mesh(geometry, metalMaterial);
         bodyMesh.castShadow = true;
         bodyMesh.receiveShadow = true;
         gearAssembly.add(bodyMesh);
@@ -274,7 +278,6 @@ window.addEventListener('DOMContentLoaded', () => {
     orbitalSystem.add(nodeGroup);
     
     function createDataNode(color, size, x) {
-        // Using MeshBasicMaterial so it ignores lighting and glows purely
         const mesh = new THREE.Mesh(new THREE.PlaneGeometry(size, size), new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide }));
         mesh.rotation.x = Math.PI / 2;
         mesh.position.set(x, 0, 0);
