@@ -113,5 +113,5 @@ body {
     width: 100% !important;
     height: 100% !important;
     outline: none;
-    pointer-events-none;
+    pointer-events: none;
 }

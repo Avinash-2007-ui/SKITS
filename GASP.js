@@ -83,20 +83,14 @@ window.addEventListener('DOMContentLoaded', () => {
     // ⚙️ THE SAFE CONFIGURATION ZONE ⚙️
     // =======================================================================
     const CONFIG = {
-        // 🔸 CURRENT: ORIGINAL VIDEO THEME (ORANGE/GOLD)
-        colorMain: 0xea580c,   // Deep Orange
-        colorSub: 0xfacc15,    // Gold
+        // The Sleek Cyber Blue Theme from your screenshot
+        colorMain: 0x0ea5e9,   // Deep Blue
+        colorSub: 0x38bdf8,    // Light Cyan
         colorAccent: 0xffffff, // White
         
-        /* // 🔹 WANT THE BLUISH THEME? Delete the 3 colors above and use these instead:
-        colorMain: 0x0284c7,   // Deep Cyber Blue
-        colorSub: 0x38bdf8,    // Light Neon Blue
-        colorAccent: 0xffffff, // White
-        */
-        
-        spinSpeed: 0.15,       // Overall rotation speed
-        glowIntensity: 1.2,    // How bright the neon lines glow
-        fogDensity: 0.015      // Fades the far edges into the darkness
+        spinSpeed: 0.05,       
+        glowIntensity: 1.5,    
+        ambientLight: 0.5      
     };
     // =======================================================================
 
@@ -123,12 +117,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x070708);
-    scene.fog = new THREE.FogExp2(0x070708, CONFIG.fogDensity); 
+    scene.fog = new THREE.FogExp2(0x070708, 0.015); 
     
-    // Positioned to look down across the vast radar field
+    // Camera positioned high up looking down at the network
     const camera = new THREE.PerspectiveCamera(50, stage.clientWidth / stage.clientHeight, 0.1, 200);
-    camera.position.set(0, 15, 30); 
-    camera.lookAt(0, -2, 0); 
+    camera.position.set(0, 18, 35); 
+    camera.lookAt(0, 0, 0); 
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
     renderer.setSize(stage.clientWidth, stage.clientHeight);
@@ -139,86 +133,95 @@ window.addEventListener('DOMContentLoaded', () => {
     const renderScene = new THREE.RenderPass(scene, camera);
     const bloomPass = new THREE.UnrealBloomPass(
         new THREE.Vector2(stage.clientWidth, stage.clientHeight),
-        CONFIG.glowIntensity, // Strength
-        0.5,                  // Spread
-        0.1                   // Threshold (Low means all lines will glow)
+        CONFIG.glowIntensity, 
+        0.5,                  
+        0.2                   
     );
     const composer = new THREE.EffectComposer(renderer);
     composer.addPass(renderScene);
     composer.addPass(bloomPass);
 
     // =======================================================================
-    // LAYER 1: THE RADAR UNIVERSE
+    // LAYER 1: THE GRID FLOOR
     // =======================================================================
-    const orbitalSystem = new THREE.Group();
-    // Tilted flat and pushed down to sit perfectly beneath the text
-    orbitalSystem.position.set(0, -5, -5); 
-    orbitalSystem.rotation.x = -1.2; // Steep tilt like the video
-    scene.add(orbitalSystem);
-
-    // Faint tracking grid on the floor
-    const gridHelper = new THREE.GridHelper(150, 60, 0x1a1a1a, 0x111111);
+    const gridHelper = new THREE.GridHelper(100, 100, 0x222222, 0x111111);
+    gridHelper.position.y = -4.0;
     gridHelper.material.transparent = true;
     gridHelper.material.opacity = 0.5;
-    gridHelper.rotation.x = Math.PI / 2; // Align grid with the tilted orbital system
-    orbitalSystem.add(gridHelper);
+    scene.add(gridHelper);
 
-    // --- HELPER TO DRAW GLOWING RINGS ---
+    // =======================================================================
+    // LAYER 2: THE ORBITAL NETWORK
+    // =======================================================================
+    const orbitalSystem = new THREE.Group();
+    orbitalSystem.rotation.x = -0.15; // Slight tilt
+    scene.add(orbitalSystem);
+
+    // HELPER: Draw Rings
     function buildGlowingRing(radius, colorHex, opacity, isDashed = false) {
         const points = [];
-        for (let i = 0; i <= 128; i++) {
-            const theta = (i / 128) * Math.PI * 2;
-            points.push(new THREE.Vector3(Math.cos(theta) * radius, Math.sin(theta) * radius, 0)); 
+        for (let i = 0; i <= 64; i++) {
+            const theta = (i / 64) * Math.PI * 2;
+            points.push(new THREE.Vector3(Math.cos(theta) * radius, 0, Math.sin(theta) * radius));
         }
         const geometry = new THREE.BufferGeometry().setFromPoints(points);
         let mat = isDashed 
-            ? new THREE.LineDashedMaterial({ color: colorHex, dashSize: 0.6, gapSize: 0.4, transparent: true, opacity: opacity })
+            ? new THREE.LineDashedMaterial({ color: colorHex, dashSize: 0.5, gapSize: 0.5, transparent: true, opacity: opacity })
             : new THREE.LineBasicMaterial({ color: colorHex, transparent: true, opacity: opacity });
         const line = new THREE.Line(geometry, mat);
         if (isDashed) line.computeLineDistances();
         return line;
     }
 
-    // --- MASSIVE CONCENTRIC RINGS ---
-    // The larger the radius, the further out it sweeps
-    const rings = new THREE.Group();
-    orbitalSystem.add(rings);
+    // Add the Rings
+    const ringRadii = [6, 8, 14, 20];
+    orbitalSystem.add(buildGlowingRing(6, CONFIG.colorMain, 0.8, false));
+    orbitalSystem.add(buildGlowingRing(8, CONFIG.colorMain, 0.4, true));
+    orbitalSystem.add(buildGlowingRing(14, CONFIG.colorAccent, 0.4, true));
+    orbitalSystem.add(buildGlowingRing(20, CONFIG.colorMain, 0.8, false));
 
-    // Core targeting rings
-    rings.add(buildGlowingRing(4.0, CONFIG.colorSub, 0.4, true));
-    rings.add(buildGlowingRing(6.0, CONFIG.colorAccent, 0.2, false));
-    
-    // Main UI Data Rings
-    rings.add(buildGlowingRing(10.0, CONFIG.colorMain, 0.8, false));
-    rings.add(buildGlowingRing(10.5, CONFIG.colorMain, 0.3, true));
-    
-    // Outer expanse rings
-    rings.add(buildGlowingRing(16.0, CONFIG.colorSub, 0.5, true));
-    rings.add(buildGlowingRing(22.0, CONFIG.colorMain, 0.2, false));
+    // GENERATE NODES & CONNECTIONS
+    const nodePositions = [];
+    const nodeMeshes = [];
+    const nodeCount = 45;
 
-    // --- ORBITING DATA NODES ---
-    // Tiny glowing squares representing data packets traveling along the rings
-    const nodeGroup = new THREE.Group();
-    orbitalSystem.add(nodeGroup);
-    
-    function createDataNode(color, size, radius, angleOffset) {
+    // 1. Create the floating data nodes
+    for (let i = 0; i < nodeCount; i++) {
+        const radius = ringRadii[Math.floor(Math.random() * ringRadii.length)];
+        const angle = Math.random() * Math.PI * 2;
+        const x = Math.cos(angle) * radius;
+        const z = Math.sin(angle) * radius;
+        const pos = new THREE.Vector3(x, 0, z);
+        nodePositions.push(pos);
+
+        const isHighlighted = Math.random() > 0.85;
+        const size = isHighlighted ? 0.3 : 0.15;
+        const color = isHighlighted ? CONFIG.colorSub : CONFIG.colorAccent;
+
         const mesh = new THREE.Mesh(
-            new THREE.PlaneGeometry(size, size), 
-            new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide })
+            new THREE.SphereGeometry(size, 16, 16),
+            new THREE.MeshBasicMaterial({ color: color })
         );
-        // Position on the ring using trigonometry
-        mesh.position.set(Math.cos(angleOffset) * radius, Math.sin(angleOffset) * radius, 0);
-        nodeGroup.add(mesh);
-        return mesh;
+        mesh.position.copy(pos);
+        
+        // Save a random time offset so they bob up and down independently
+        mesh.userData = { timeOffset: Math.random() * 100 };
+        
+        orbitalSystem.add(mesh);
+        nodeMeshes.push(mesh);
     }
-    
-    // Track 10.0 nodes
-    createDataNode(CONFIG.colorAccent, 0.3, 10.0, 0);
-    createDataNode(CONFIG.colorMain, 0.2, 10.0, 0.2); 
-    
-    // Track 16.0 nodes
-    createDataNode(CONFIG.colorSub, 0.4, 16.0, Math.PI);
-    createDataNode(CONFIG.colorAccent, 0.2, 16.0, Math.PI + 0.15);
+
+    // 2. Draw lines between nearby nodes to create the constellation
+    const lineMat = new THREE.LineBasicMaterial({ color: CONFIG.colorAccent, transparent: true, opacity: 0.15 });
+    for (let i = 0; i < nodePositions.length; i++) {
+        for (let j = i + 1; j < nodePositions.length; j++) {
+            if (nodePositions[i].distanceTo(nodePositions[j]) < 6.5) {
+                const geo = new THREE.BufferGeometry().setFromPoints([nodePositions[i], nodePositions[j]]);
+                const line = new THREE.Line(geo, lineMat);
+                orbitalSystem.add(line);
+            }
+        }
+    }
 
     // --- 3. RENDER LOOP ---
     let clock = new THREE.Clock();
@@ -227,19 +230,13 @@ window.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(renderFramePhysics);
         const time = clock.getElapsedTime();
 
-        // Spin the rings in opposite directions for complex parallax
-        rings.children[0].rotation.z = time * CONFIG.spinSpeed;
-        rings.children[1].rotation.z = -time * (CONFIG.spinSpeed * 0.5);
-        rings.children[2].rotation.z = time * (CONFIG.spinSpeed * 0.8);
-        rings.children[3].rotation.z = -time * CONFIG.spinSpeed;
-        rings.children[4].rotation.z = time * (CONFIG.spinSpeed * 1.2);
-        
-        // Data nodes fly rapidly around the tracks
-        nodeGroup.rotation.z = time * (CONFIG.spinSpeed * 2.5);
+        // Rotate the entire constellation
+        orbitalSystem.rotation.y = time * CONFIG.spinSpeed;
 
-        // Slow cinematic camera float
-        camera.position.x = Math.sin(time * 0.1) * 2;
-        camera.lookAt(0, -2, 0);
+        // Bob the nodes up and down slightly
+        nodeMeshes.forEach((mesh) => {
+            mesh.position.y = Math.sin(time * 1.5 + mesh.userData.timeOffset) * 0.3;
+        });
 
         composer.render();
     }
