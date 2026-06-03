@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
    GSAP MATCH SEQUENCE FOR SKITS_FIRST_STYLE_3 VIDEO MATCH
    ========================================================================== */
 window.addEventListener('DOMContentLoaded', () => {
-    // 1. GSAP TIMELINE SETUP
+    // 1. GSAP ENTRANCE TIMELINE
     gsap.registerPlugin(ScrollTrigger);
     const tl = gsap.timeline();
     
@@ -100,16 +100,16 @@ window.addEventListener('DOMContentLoaded', () => {
     if (!stage) return;
 
     const scene = new THREE.Scene();
-    // Set a pure dark background so the glow calculations work perfectly
     scene.background = new THREE.Color(0x070708);
-    scene.fog = new THREE.FogExp2(0x070708, 0.06); // Adds depth-of-field fading
+    // Adjusted fog for a massive scale environment
+    scene.fog = new THREE.FogExp2(0x070708, 0.035); 
     
-    // Camera angle tilted to match the reference UI
-    const camera = new THREE.PerspectiveCamera(55, stage.clientWidth / stage.clientHeight, 0.1, 100);
-    camera.position.set(0, 3.8, 7.5);
-    camera.lookAt(0, 0, 0);
+    // CAMERA FIX: Dropped much lower to the ground and pulled back
+    const camera = new THREE.PerspectiveCamera(60, stage.clientWidth / stage.clientHeight, 0.1, 100);
+    camera.position.set(0, 1.8, 9.5); 
+    camera.lookAt(0, -0.5, 0); // Looking slightly downward across the vast floor
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
     renderer.setSize(stage.clientWidth, stage.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     stage.appendChild(renderer.domElement);
@@ -118,30 +118,31 @@ window.addEventListener('DOMContentLoaded', () => {
     const renderScene = new THREE.RenderPass(scene, camera);
     const bloomPass = new THREE.UnrealBloomPass(
         new THREE.Vector2(stage.clientWidth, stage.clientHeight),
-        1.8,  // Strength of the glow (Intensity)
-        0.5,  // Radius of the glow (Spread)
-        0.25  // Threshold (Lower means more things will glow)
+        1.5,  // Intensity
+        0.6,  // Spread
+        0.2   // Threshold
     );
 
     const composer = new THREE.EffectComposer(renderer);
     composer.addPass(renderScene);
     composer.addPass(bloomPass);
 
-    // Group for global perspective tilt
     const orbitalGroup = new THREE.Group();
-    orbitalGroup.rotation.x = -0.15; 
+    // Tilted the entire universe slightly to match the horizon
+    orbitalGroup.rotation.x = -0.05; 
     scene.add(orbitalGroup);
 
-    // --- HELPER FUNCTIONS ---
+    // --- HELPER FUNCTION ---
     function buildWireframeCircle(radius, colorHex, opacity, isDashed = false) {
         const points = [];
-        for (let i = 0; i <= 64; i++) {
-            const theta = (i / 64) * Math.PI * 2;
+        const segments = 128; // Increased resolution for massive circles
+        for (let i = 0; i <= segments; i++) {
+            const theta = (i / segments) * Math.PI * 2;
             points.push(new THREE.Vector3(Math.cos(theta) * radius, 0, Math.sin(theta) * radius));
         }
         const geometry = new THREE.BufferGeometry().setFromPoints(points);
         let mat = isDashed 
-            ? new THREE.LineDashedMaterial({ color: colorHex, dashSize: 0.15, gapSize: 0.15, transparent: true, opacity: opacity })
+            ? new THREE.LineDashedMaterial({ color: colorHex, dashSize: 0.2, gapSize: 0.2, transparent: true, opacity: opacity })
             : new THREE.LineBasicMaterial({ color: colorHex, transparent: true, opacity: opacity });
         
         const line = new THREE.Line(geometry, mat);
@@ -149,57 +150,64 @@ window.addEventListener('DOMContentLoaded', () => {
         return line;
     }
 
-    // --- LAYER 1: PROCEDURAL TOPOGRAPHIC RADAR FLOOR ---
+    // --- LAYER 1: MASSIVE RADAR FLOOR ---
     const floorGroup = new THREE.Group();
-    floorGroup.position.y = -0.2;
+    floorGroup.position.y = -0.5;
     orbitalGroup.add(floorGroup);
 
-    // Faint grid lattice
-    const gridHelper = new THREE.GridHelper(40, 60, 0x333333, 0x1a1a1a);
+    // Huge background grid
+    const gridHelper = new THREE.GridHelper(80, 80, 0x222222, 0x111111);
     gridHelper.material.transparent = true;
-    gridHelper.material.opacity = 0.2;
+    gridHelper.material.opacity = 0.3;
     floorGroup.add(gridHelper);
 
-    // Concentric mapping rings
-    floorGroup.add(buildWireframeCircle(2.0, 0x555555, 0.2, true));
-    floorGroup.add(buildWireframeCircle(4.0, 0x555555, 0.15, false));
-    floorGroup.add(buildWireframeCircle(6.0, 0x555555, 0.1, true));
+    // High-density concentric rings to simulate map complexity
+    floorGroup.add(buildWireframeCircle(3.0, 0x555555, 0.2, true));
+    floorGroup.add(buildWireframeCircle(4.5, 0x555555, 0.1, false));
+    floorGroup.add(buildWireframeCircle(6.0, 0x555555, 0.2, true));
+    floorGroup.add(buildWireframeCircle(7.5, 0x444444, 0.1, false));
+    floorGroup.add(buildWireframeCircle(9.0, 0x333333, 0.15, true));
+    floorGroup.add(buildWireframeCircle(12.0, 0x222222, 0.1, false));
 
-    // --- LAYER 2: ELEVATED GLOWING ORANGE RING ---
+    // --- LAYER 2: MASSIVE ELEVATED ORANGE RING ---
     const elevatedRingTrack = new THREE.Group();
-    elevatedRingTrack.position.y = 0.7; // Lifted exactly like the screenshot
+    elevatedRingTrack.position.y = 0.6; // Hovering above the floor
     orbitalGroup.add(elevatedRingTrack);
 
-    // Main neon ring
-    const orangeCircle = buildWireframeCircle(3.2, 0xea580c, 1.0, false);
+    // Scaled up drastically (Radius 7.0 instead of 3.2)
+    const orangeCircle = buildWireframeCircle(7.0, 0xea580c, 0.9, false);
     elevatedRingTrack.add(orangeCircle);
 
-    // --- LAYER 3: VERTICAL STANDING DATA PANELS ---
+    // Inner glowing orange dashed track
+    const orangeInnerDashed = buildWireframeCircle(6.6, 0xea580c, 0.3, true);
+    elevatedRingTrack.add(orangeInnerDashed);
+
+    // --- LAYER 3: VERTICAL PANELS (PUSHED TO FOREGROUND) ---
     const panelCount = 3;
     for (let i = 0; i < panelCount; i++) {
-        const panelGeometry = new THREE.PlaneGeometry(1.2, 0.7);
+        const panelGeometry = new THREE.PlaneGeometry(1.8, 1.0); // Made panels larger
         const panelMaterial = new THREE.MeshBasicMaterial({
             color: 0xea580c,
             side: THREE.DoubleSide,
             transparent: true,
-            opacity: 0.08, // Faint glass fill
+            opacity: 0.05, 
             depthWrite: false
         });
         const mesh = new THREE.Mesh(panelGeometry, panelMaterial);
         
-        // Bright glowing border for the panels
         const edges = new THREE.EdgesGeometry(panelGeometry);
-        const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0xea580c, opacity: 0.8, transparent: true }));
+        const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0xea580c, opacity: 0.6, transparent: true }));
         mesh.add(line);
 
-        // Position them upright on the ring
-        const angle = (i / panelCount) * Math.PI * 0.5 - 0.5; 
-        mesh.position.set(Math.cos(angle) * 3.2, 0.35, Math.sin(angle) * 3.2);
-        mesh.rotation.y = -angle + Math.PI / 2; // Face outward
+        // Positioned at the very front of the massive 7.0 radius ring
+        // Angles calculated to place them directly in front of the camera
+        const angle = (i / panelCount) * Math.PI * 0.4 + (Math.PI * 0.3); 
+        mesh.position.set(Math.cos(angle) * 7.0, 0.5, Math.sin(angle) * 7.0);
+        mesh.rotation.y = -angle + Math.PI / 2; 
         elevatedRingTrack.add(mesh);
     }
 
-    // --- LAYER 4: ORBITING DATA NODES (YELLOW/WHITE) ---
+    // --- LAYER 4: ORBITING DATA NODES ---
     const nodeGroup = new THREE.Group();
     elevatedRingTrack.add(nodeGroup);
 
@@ -212,35 +220,25 @@ window.addEventListener('DOMContentLoaded', () => {
         return mesh;
     };
     
-    // Main bright tracker
-    const primaryNode = createNode(0xffffff, 0.05, 3.2, 0);
-    // Smaller trailing particles
-    createNode(0xfacc15, 0.03, 3.2, 0.3);
-    createNode(0xfacc15, 0.02, 3.2, 0.5);
+    createNode(0xffffff, 0.08, 7.0, 0); // Primary white tracker
+    createNode(0xfacc15, 0.05, 7.0, 0.4); // Yellow trail
+    createNode(0xfacc15, 0.03, 7.0, 0.7); // Yellow trail
 
-    // --- INNER CORE RING ---
-    const innerRingTrack = new THREE.Group();
-    innerRingTrack.position.y = 0.3; // Floating midway between floor and main ring
-    orbitalGroup.add(innerRingTrack);
-    innerRingTrack.add(buildWireframeCircle(1.4, 0xea580c, 0.4, true));
-
-    // 3. HARDWARE ACCELERATED RENDER LOOP
+    // --- 3. HARDWARE ACCELERATED RENDER LOOP ---
     let clock = new THREE.Clock();
 
     function renderFramePhysics() {
         requestAnimationFrame(renderFramePhysics);
         const elapsedTime = clock.getElapsedTime();
 
-        // Counter-rotating the layers for complex machine-like movement
-        elevatedRingTrack.rotation.y = elapsedTime * 0.1;
-        innerRingTrack.rotation.y = -elapsedTime * 0.2;
-        floorGroup.rotation.y = elapsedTime * 0.02; // Very slow radar sweep
+        // Layer counter-rotations
+        elevatedRingTrack.rotation.y = elapsedTime * 0.05;
+        floorGroup.rotation.y = -elapsedTime * 0.02; 
         
-        // Pulse/Orbit the data node cluster
-        const particleAngle = elapsedTime * 0.4;
-        nodeGroup.rotation.y = particleAngle;
+        // Data nodes spinning faster along the track
+        nodeGroup.rotation.y = elapsedTime * 0.2;
 
-        // CRITICAL: Render using the Composer (Glow), NOT the standard renderer
+        // Render via Post-Processing Bloom Composer
         composer.render();
     }
     renderFramePhysics();
