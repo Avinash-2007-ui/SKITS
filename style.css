@@ -70,10 +70,10 @@ body {
 .waving-dots span {
     width: 10px;
     height: 10px;
-    background-color: #06d09e; /* Signature BMW Motorsport Blue */
+    background-color: #0066b2; /* Signature BMW Motorsport Blue */
     border-radius: 50%;
     display: inline-block;
-    animation: wave-bounce 1.4s infinite ease-in-out both;
+    animation: wave-bounce 0.8s infinite ease-in-out both;
 }
 
 /* Delaying the bounces to create the waving fluid motion sequence */
