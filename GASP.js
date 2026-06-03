@@ -101,48 +101,60 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x070708);
-    scene.fog = new THREE.FogExp2(0x070708, 0.025); 
+    scene.fog = new THREE.FogExp2(0x070708, 0.015); // Lighter fog so we can see the wide expanse
     
-    // Pulled camera back to capture the massive horizontal scale
-    const camera = new THREE.PerspectiveCamera(50, stage.clientWidth / stage.clientHeight, 0.1, 100);
-    camera.position.set(0, 14, 18); 
+    // Pulled camera further back and up to capture the massive horizontal scale
+    const camera = new THREE.PerspectiveCamera(45, stage.clientWidth / stage.clientHeight, 0.1, 200);
+    camera.position.set(0, 18, 30); 
     camera.lookAt(0, -2, 0); 
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
     renderer.setSize(stage.clientWidth, stage.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    
+    // High-quality shadows for realistic depth
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping; // Cinematic color grading
+    renderer.toneMappingExposure = 1.0;
     stage.appendChild(renderer.domElement);
 
     // --- BRINGING BACK THE INDUSTRIAL FLOOR GRID ---
-    const gridHelper = new THREE.GridHelper(100, 100, 0x333333, 0x111111);
-    gridHelper.position.y = -3.5; // Placed below the lowest gears
+    const gridHelper = new THREE.GridHelper(150, 150, 0x333333, 0x111111);
+    gridHelper.position.y = -5.0; 
     gridHelper.material.transparent = true;
-    gridHelper.material.opacity = 0.5;
+    gridHelper.material.opacity = 0.4;
     scene.add(gridHelper);
 
-    // --- PHOTOREALISTIC STUDIO LIGHTING ---
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); 
+    // --- PHOTOREALISTIC STUDIO LIGHTING RIG ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4); 
     scene.add(ambientLight);
 
-    const mainLight = new THREE.DirectionalLight(0xffffff, 2.5);
-    mainLight.position.set(15, 25, 10);
-    mainLight.castShadow = true;
-    scene.add(mainLight);
+    // Key Light (Main bright white light from top-right)
+    const keyLight = new THREE.DirectionalLight(0xffffff, 3.0);
+    keyLight.position.set(20, 30, 20);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.width = 2048;
+    keyLight.shadow.mapSize.height = 2048;
+    scene.add(keyLight);
 
-    // Faint orange under-glow to keep the SKITS branding
-    const orangeLight = new THREE.PointLight(0xea580c, 4.0, 50);
-    orangeLight.position.set(-10, -2, -5);
-    scene.add(orangeLight);
+    // Fill Light (Soft cool blue light from bottom-left to fill shadows)
+    const fillLight = new THREE.DirectionalLight(0x88bbff, 1.0);
+    fillLight.position.set(-20, 10, 20);
+    scene.add(fillLight);
 
-    // --- REFINED POST-PROCESSING (Less neon, more shiny metal) ---
+    // Rim Light (Sharp SKITS Orange light from the back to highlight edges)
+    const rimLight = new THREE.DirectionalLight(0xea580c, 4.0);
+    rimLight.position.set(-15, 5, -25);
+    scene.add(rimLight);
+
+    // --- SUBTLE POST-PROCESSING ---
     const renderScene = new THREE.RenderPass(scene, camera);
     const bloomPass = new THREE.UnrealBloomPass(
         new THREE.Vector2(stage.clientWidth, stage.clientHeight),
-        0.3,  // Lowered intensity so it looks like reflections, not neon tubes
-        0.4, 
-        0.75  // High threshold so only the brightest highlights glow
+        0.15, // Extremely subtle bloom just for specular metallic glints
+        0.2, 
+        0.85  // High threshold so only direct light reflections glow
     );
 
     const composer = new THREE.EffectComposer(renderer);
@@ -150,12 +162,11 @@ window.addEventListener('DOMContentLoaded', () => {
     composer.addPass(bloomPass);
 
     // --- PROCEDURAL MACHINED GEAR GENERATOR ---
-    function createGear(radius, teethCount, extrusionDepth, colorHex, hasSpokes) {
+    function createGear(radius, teethCount, extrusionDepth, colorHex, hasSpokes, initialRotation = 0) {
         const shape = new THREE.Shape();
         const innerRadius = radius * 0.85; 
         const step = (Math.PI * 2) / teethCount;
 
-        // Draw the outer teeth
         for (let i = 0; i < teethCount; i++) {
             const angle = i * step;
             shape.lineTo(Math.cos(angle - step/4) * innerRadius, Math.sin(angle - step/4) * innerRadius);
@@ -165,16 +176,15 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         shape.closePath();
 
-        // Add spokes (cutouts) to make it look like a real machined part
         if (hasSpokes) {
-            const numSpokes = 5;
+            const numSpokes = 6;
             const spokeInner = radius * 0.25;
             const spokeOuter = radius * 0.65;
             
             for (let j = 0; j < numSpokes; j++) {
                 const spokeAngle = (Math.PI * 2) / numSpokes;
-                const angleStart = j * spokeAngle + 0.25;
-                const angleEnd = (j + 1) * spokeAngle - 0.25;
+                const angleStart = j * spokeAngle + 0.15;
+                const angleEnd = (j + 1) * spokeAngle - 0.15;
                 
                 const holePath = new THREE.Path();
                 holePath.absarc(0, 0, spokeOuter, angleStart, angleEnd, false);
@@ -182,7 +192,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 shape.holes.push(holePath);
             }
         } else {
-            // Just a central axle hole for smaller gears
             const holePath = new THREE.Path();
             holePath.absarc(0, 0, radius * 0.3, 0, Math.PI * 2, false);
             shape.holes.push(holePath);
@@ -191,71 +200,91 @@ window.addEventListener('DOMContentLoaded', () => {
         const extrudeSettings = { 
             depth: extrusionDepth, 
             bevelEnabled: true, 
-            bevelSegments: 2, 
+            bevelSegments: 3, 
             steps: 1, 
-            bevelSize: 0.05, 
-            bevelThickness: 0.05 
+            bevelSize: 0.1, 
+            bevelThickness: 0.1 
         };
         const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
         geometry.center();
 
-        // Premium Metal Material
+        // TRUE METALLIC SHADERS
         const material = new THREE.MeshStandardMaterial({ 
             color: colorHex, 
-            metalness: 1.0,  // Full metal
-            roughness: 0.25  // Highly polished
+            metalness: 0.9,   // Highly metallic
+            roughness: 0.35,  // Slight roughness for brushed metal look
+            envMapIntensity: 1.0 
         });
 
         const mesh = new THREE.Mesh(geometry, material);
         mesh.castShadow = true;
         mesh.receiveShadow = true;
-        mesh.rotation.x = -Math.PI / 2; // Lay flat
+        mesh.rotation.x = -Math.PI / 2; 
+        mesh.rotation.z = initialRotation; // Click teeth into place
         return mesh;
     }
 
-    // --- BUILD THE MASSIVE INTERLOCKING GEAR TRAIN ---
+    // --- BUILD THE EXPANSIVE HORIZONTAL GEAR MATRIX ---
     const gearSystem = new THREE.Group();
-    // Centered but pushed slightly right to balance the text
-    gearSystem.position.set(2, -1, -2);
+    gearSystem.position.set(0, -2, -5);
     scene.add(gearSystem);
 
-    const SILVER = 0xdddddd;
-    const BRONZE = 0xd97736; // A true copper/brass tone
-    const DARK_STEEL = 0x555555;
+    // Material Colors
+    const SILVER = 0xe0e0e0;
+    const BRONZE = 0xcc7733; 
+    const DARK_STEEL = 0x444444;
 
-    // GEAR 1: Center Main Hub (Large, Silver, Spoked)
-    const gear1 = createGear(4.0, 24, 0.6, SILVER, true);
-    gearSystem.add(gear1);
+    const gears = []; // Store them to animate cleanly
 
-    // GEAR 2: Right Extension (Medium, Bronze, Spoked)
-    const gear2 = createGear(2.5, 15, 0.6, BRONZE, true);
-    gear2.position.set(6.5, 0, 0); // 4.0 + 2.5 = 6.5
-    gearSystem.add(gear2);
+    // HELPER: Add a gear and calculate its interlocking position/rotation
+    function addMeshedGear(parentGear, radius, teeth, color, hasSpokes, angleFromParent, yOffset) {
+        const parentRadius = parentGear.userData.radius;
+        const distance = parentRadius + radius - 0.15; // -0.15 forces teeth to sink into each other
+        
+        const x = parentGear.position.x + Math.cos(angleFromParent) * distance;
+        const z = parentGear.position.z + Math.sin(angleFromParent) * distance;
+        
+        const gear = createGear(radius, teeth, 0.8, color, hasSpokes);
+        gear.position.set(x, parentGear.position.y + yOffset, z);
+        
+        // Save data for animation physics
+        gear.userData = {
+            radius: radius,
+            teeth: teeth,
+            parent: parentGear,
+            ratio: parentGear.userData.teeth / teeth
+        };
+        
+        gearSystem.add(gear);
+        gears.push(gear);
+        return gear;
+    }
 
-    // GEAR 3: Left Extension (Large, Dark Steel, Spoked)
-    const gear3 = createGear(3.0, 18, 0.8, DARK_STEEL, true);
-    gear3.position.set(-7.0, 0, 0); // 4.0 + 3.0 = 7.0
-    gearSystem.add(gear3);
+    // LAYER 1: BASE LEVEL
+    const g1_center = createGear(5.0, 30, 1.0, SILVER, true);
+    g1_center.position.set(0, 0, 0);
+    g1_center.userData = { radius: 5.0, teeth: 30, isDriver: true };
+    gearSystem.add(g1_center);
+    gears.push(g1_center);
 
-    // GEAR 4: Top Level - Stacked on Gear 2 (Small, Silver, Solid)
-    const gear4 = createGear(1.5, 9, 0.4, SILVER, false);
-    gear4.position.set(6.5, 0.8, 0); // Same axle as gear 2, shifted up
-    gearSystem.add(gear4);
+    // Expanding horizontally
+    const g2_right = addMeshedGear(g1_center, 3.0, 18, BRONZE, true, 0, 0); // Directly right
+    const g3_farRight = addMeshedGear(g2_right, 4.0, 24, DARK_STEEL, true, 0.5, 0); 
+    const g4_left = addMeshedGear(g1_center, 4.0, 24, DARK_STEEL, true, Math.PI, 0); // Directly left
+    const g5_farLeft = addMeshedGear(g4_left, 2.5, 15, BRONZE, false, Math.PI - 0.5, 0);
 
-    // GEAR 5: Top Level - Meshing with Gear 4 (Medium, Bronze, Spoked)
-    const gear5 = createGear(2.0, 12, 0.4, BRONZE, true);
-    gear5.position.set(6.5, 0.8, -3.5); // 1.5 + 2.0 = 3.5 backward on Z axis
-    gearSystem.add(gear5);
+    // LAYER 2: ELEVATED GEARS
+    const g6_topCenter = createGear(2.5, 15, 0.6, BRONZE, false);
+    g6_topCenter.position.set(0, 1.2, 0); // Stacked exactly on center axle
+    g6_topCenter.userData = { radius: 2.5, teeth: 15, isDriver: true, linkedTo: g1_center };
+    gearSystem.add(g6_topCenter);
+    gears.push(g6_topCenter);
 
-    // GEAR 6: Bottom Level - Stacked under Main Hub (Small, Bronze, Solid)
-    const gear6 = createGear(2.0, 12, 0.5, BRONZE, false);
-    gear6.position.set(0, -0.8, 0); // Underneath gear 1
-    gearSystem.add(gear6);
+    const g7_topRight = addMeshedGear(g6_topCenter, 3.5, 21, SILVER, true, -0.8, 0);
+    const g8_topLeft = addMeshedGear(g6_topCenter, 3.0, 18, DARK_STEEL, true, 3.5, 0);
 
-    // GEAR 7: Bottom Level - Meshing with Gear 6 (Large, Silver, Spoked)
-    const gear7 = createGear(3.0, 18, 0.5, SILVER, true);
-    gear7.position.set(0, -0.8, 5.0); // Coming toward the camera
-    gearSystem.add(gear7);
+    // LAYER 3: BACKGROUND/BOTTOM SUPPORT GEARS
+    const g9_back = addMeshedGear(g1_center, 6.0, 36, DARK_STEEL, true, -1.5, -1.0);
 
 
     // --- 3. HARDWARE ACCELERATED RENDER LOOP ---
@@ -263,40 +292,27 @@ window.addEventListener('DOMContentLoaded', () => {
 
     function renderFramePhysics() {
         requestAnimationFrame(renderFramePhysics);
-        const time = clock.getElapsedTime();
-        const speed = 0.5;
+        const elapsedTime = clock.getElapsedTime();
+        const baseSpeed = 0.4;
 
-        // TRUE MECHANICAL GEAR RATIO MATH
-        // To make the teeth interlock perfectly, the rotation speed is multiplied 
-        // by the ratio of (Driver Teeth / Driven Teeth) in the opposite direction.
+        // Drive the center gears
+        const mainRotation = elapsedTime * baseSpeed;
+        g1_center.rotation.z = mainRotation;
+        g6_topCenter.rotation.z = mainRotation; // Stacked on same axle
         
-        const r1 = time * speed;
-        gear1.rotation.z = r1;
-        
-        const r2 = -(r1 * (24/15)) + 0.1; // +0.1 offset meshes the teeth into the gaps
-        gear2.rotation.z = r2;
-        
-        const r3 = -(r1 * (24/18)) - 0.05;
-        gear3.rotation.z = r3;
+        // Physics engine: automatically calculate rotation for all meshed gears
+        gears.forEach((gear, index) => {
+            if (!gear.userData.isDriver && gear.userData.parent) {
+                // Determine direction based on parent's current rotation
+                const parentRot = gear.userData.parent.rotation.z;
+                // Add a tiny arbitrary offset based on the index to force the teeth to slot in
+                const offset = index * 0.12; 
+                gear.rotation.z = -(parentRot * gear.userData.ratio) + offset;
+            }
+        });
 
-        // Gear 4 shares the axle with Gear 2, so it spins at the exact same speed
-        const r4 = r2;
-        gear4.rotation.z = r4;
-
-        // Gear 5 meshes with Gear 4
-        const r5 = -(r4 * (9/12)) + 0.15;
-        gear5.rotation.z = r5;
-
-        // Gear 6 shares the axle with the Main Hub (Gear 1)
-        const r6 = r1;
-        gear6.rotation.z = r6;
-
-        // Gear 7 meshes with Gear 6
-        const r7 = -(r6 * (12/18)) - 0.1;
-        gear7.rotation.z = r7;
-
-        // Slow cinematic panning of the entire complex
-        gearSystem.rotation.y = time * 0.05;
+        // Slow cinematic panning
+        gearSystem.rotation.y = Math.sin(elapsedTime * 0.1) * 0.1;
 
         composer.render();
     }
