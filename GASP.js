@@ -171,7 +171,7 @@ window.addEventListener('DOMContentLoaded', () => {
     scene.add(gridHelper);
 
     // =======================================================================
-    // LAYER 2: THE ORBITAL NETWORK
+    // LAYER 2: THE MASSIVE ORBITAL NETWORK
     // =======================================================================
     const orbitalSystem = new THREE.Group();
     orbitalSystem.rotation.x = -0.15; // Slight tilt
@@ -180,30 +180,30 @@ window.addEventListener('DOMContentLoaded', () => {
     // HELPER: Draw Rings
     function buildGlowingRing(radius, colorHex, opacity, isDashed = false) {
         const points = [];
-        for (let i = 0; i <= 64; i++) {
-            const theta = (i / 64) * Math.PI * 2;
+        for (let i = 0; i <= 96; i++) { // Increased resolution for larger rings
+            const theta = (i / 96) * Math.PI * 2;
             points.push(new THREE.Vector3(Math.cos(theta) * radius, 0, Math.sin(theta) * radius));
         }
         const geometry = new THREE.BufferGeometry().setFromPoints(points);
         let mat = isDashed 
-            ? new THREE.LineDashedMaterial({ color: colorHex, dashSize: 0.5, gapSize: 0.5, transparent: true, opacity: opacity })
+            ? new THREE.LineDashedMaterial({ color: colorHex, dashSize: 0.6, gapSize: 0.4, transparent: true, opacity: opacity })
             : new THREE.LineBasicMaterial({ color: colorHex, transparent: true, opacity: opacity });
         const line = new THREE.Line(geometry, mat);
         if (isDashed) line.computeLineDistances();
         return line;
     }
 
-    // Add the Rings
-    const ringRadii = [6, 8, 14, 20];
-    orbitalSystem.add(buildGlowingRing(6, CONFIG.colorMain, 0.8, false));
-    orbitalSystem.add(buildGlowingRing(8, CONFIG.colorMain, 0.4, true));
-    orbitalSystem.add(buildGlowingRing(14, CONFIG.colorAccent, 0.4, true));
-    orbitalSystem.add(buildGlowingRing(20, CONFIG.colorMain, 0.8, false));
+    // --- INCREASED RING RADII (Scaled up by ~40%) ---
+    const ringRadii = [8, 12, 18, 26]; 
+    orbitalSystem.add(buildGlowingRing(8, CONFIG.colorMain, 0.8, false));
+    orbitalSystem.add(buildGlowingRing(12, CONFIG.colorMain, 0.4, true));
+    orbitalSystem.add(buildGlowingRing(18, CONFIG.colorAccent, 0.4, true));
+    orbitalSystem.add(buildGlowingRing(26, CONFIG.colorMain, 0.8, false));
 
     // GENERATE NODES & CONNECTIONS
     const nodePositions = [];
     const nodeMeshes = [];
-    const nodeCount = 45;
+    const nodeCount = 55; // Added a few more nodes to fill the larger space
 
     // 1. Create the floating data nodes
     for (let i = 0; i < nodeCount; i++) {
@@ -215,7 +215,7 @@ window.addEventListener('DOMContentLoaded', () => {
         nodePositions.push(pos);
 
         const isHighlighted = Math.random() > 0.85;
-        const size = isHighlighted ? 0.3 : 0.15;
+        const size = isHighlighted ? 0.35 : 0.15; // Slightly larger nodes
         const color = isHighlighted ? CONFIG.colorSub : CONFIG.colorAccent;
 
         const mesh = new THREE.Mesh(
@@ -224,24 +224,27 @@ window.addEventListener('DOMContentLoaded', () => {
         );
         mesh.position.copy(pos);
         
-        // Save a random time offset so they bob up and down independently
         mesh.userData = { timeOffset: Math.random() * 100 };
-        
         orbitalSystem.add(mesh);
         nodeMeshes.push(mesh);
     }
 
-    // 2. Draw lines between nearby nodes to create the constellation
+    // 2. Draw lines between nearby nodes
     const lineMat = new THREE.LineBasicMaterial({ color: CONFIG.colorAccent, transparent: true, opacity: 0.15 });
     for (let i = 0; i < nodePositions.length; i++) {
         for (let j = i + 1; j < nodePositions.length; j++) {
-            if (nodePositions[i].distanceTo(nodePositions[j]) < 6.5) {
+            // Increased connection distance to account for the larger scale
+            if (nodePositions[i].distanceTo(nodePositions[j]) < 8.5) {
                 const geo = new THREE.BufferGeometry().setFromPoints([nodePositions[i], nodePositions[j]]);
                 const line = new THREE.Line(geo, lineMat);
                 orbitalSystem.add(line);
             }
         }
     }
+
+    // --- CAMERA ADJUSTMENT ---
+    // Pull the camera back and up to fit the massive new rings
+    camera.position.set(0, 22, 45); 
 
     // --- 3. RENDER LOOP ---
     let clock = new THREE.Clock();
@@ -255,7 +258,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
         // Bob the nodes up and down slightly
         nodeMeshes.forEach((mesh) => {
-            mesh.position.y = Math.sin(time * 1.5 + mesh.userData.timeOffset) * 0.3;
+            mesh.position.y = Math.sin(time * 1.5 + mesh.userData.timeOffset) * 0.4;
         });
 
         composer.render();
