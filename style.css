@@ -106,125 +106,146 @@ body {
 }
 
 /* ==========================================================================
-   PRODUCTION EXACT MATCH ORBITAL ARCHITECTURE (FROM VIDEO)
+   EXACT MATCH ELEVATED 3D HOLOGRAM MATRIX (FROM EDITED-IMAGE.PNG)
    ========================================================================== */
 
-/* The 3D stage viewport perspective */
 .perspective-stage {
-    perspective: 1400px;
-    perspective-origin: center 45%;
+    perspective: 1600px;
+    perspective-origin: center 40%;
 }
 
-/* Force elements to behave as real flat intersecting surfaces in 3D space */
 .transform-3d-system {
     transform-style: preserve-3d;
-    transform: rotateX(72deg) rotateZ(0deg);
+    transform: rotateX(66deg) rotateZ(0deg); /* Tilted perspective angle matching image */
 }
 
-/* --- THE BLUEPRINT BACKGROUND LINES --- */
-.radar-blueprint-grid {
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.02);
-    background: 
-        radial-gradient(circle, transparent 20%, #070708 100%),
-        radial-gradient(circle, transparent 0%, transparent 30%, rgba(255, 255, 255, 0.01) 31%, transparent 32%),
-        radial-gradient(circle, transparent 0%, transparent 60%, rgba(234, 88, 12, 0.02) 61%, transparent 62%);
-    background-size: 100% 100%;
-}
-
-/* Shared structural layer properties */
-.radar-layer {
+/* --- FLOOR LAYER --- */
+.radar-floor-grid {
     position: absolute;
     inset: 0;
     border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    background: 
+        radial-gradient(circle, transparent 40%, #070708 100%),
+        radial-gradient(circle, transparent 20%, rgba(255, 255, 255, 0.01) 21%, transparent 22%),
+        radial-gradient(circle, transparent 55%, rgba(255, 255, 255, 0.01) 56%, transparent 57%);
     transform-style: preserve-3d;
 }
 
-/* --- ROTATIONAL ENGINE SPEED SLOTS --- */
-.layer-slow-outer {
-    border: 1px solid rgba(255, 255, 255, 0.02);
-    animation: radar-spin-clockwise 60s linear infinite;
-}
-
-.layer-dense-cluster {
-    margin: 120px;
-    animation: radar-spin-counter 45s linear infinite;
-}
-
-.layer-fast-inner {
-    margin: 260px;
-    border: 1px dashed rgba(234, 88, 12, 0.04);
-    animation: radar-spin-clockwise 18s linear infinite;
-}
-
-/* --- SPECIFIC ARC & GLOW OVERLAYS --- */
-.tech-arc {
+.radar-radial-line {
     position: absolute;
-    inset: -1px;
+    top: 50%; left: 0; width: 100%; height: 1px;
+    background: linear-gradient(90deg, transparent 10%, rgba(255, 255, 255, 0.02) 50%, transparent 90%);
+}
+.angle-1 { transform: rotateZ(0deg); }
+.angle-2 { transform: rotateZ(45deg); }
+.angle-3 { transform: rotateZ(-45deg); }
+
+
+/* --- ELEVATED RING LAYER (LIFTED UP IN MID-AIR) --- */
+.radar-elevated-ring-wrapper {
+    position: absolute;
+    inset: 120px;
+    transform-style: preserve-3d;
+    transform: translateZ(90px); /* Physically lifts the entire ring 90px UP off the floor */
+    animation: hologram-spin-clockwise 40s linear infinite;
+}
+
+.main-orange-ring {
+    position: absolute;
+    inset: 0;
     border-radius: 50%;
-}
-.arc-orange-1 {
-    border-top: 2px solid rgba(234, 88, 12, 0.4);
-    border-right: 2px solid transparent;
-    mask-image: radial-gradient(circle, transparent 50%, black 100%);
-}
-.arc-orange-2 {
-    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-    border-left: 2px solid transparent;
+    border: 1.5px solid rgba(234, 88, 12, 0.45);
+    box-shadow: 0 0 25px rgba(234, 88, 12, 0.2), inset 0 0 25px rgba(234, 88, 12, 0.1);
+    transform-style: preserve-3d;
 }
 
-/* --- TELEMETRY GRAPH DATA DOTS --- */
-.data-pulse {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background-color: #fff;
-    border-radius: 50%;
-}
-.pulse-alpha { top: 0; left: 50%; box-shadow: 0 0 10px 2px #fff; }
-.pulse-beta { top: 50%; left: 100%; background-color: #ea580c; box-shadow: 0 0 12px 3px #ea580c; }
-.pulse-gamma { bottom: 15%; left: 15%; background-color: #f59e0b; box-shadow: 0 0 10px #f59e0b; }
 
-/* --- CONSTELLATION MAPPING GENERATOR --- */
-.cluster-dot {
+/* --- VERTICAL STANDING PANEL HOLOGRAMS --- */
+.vertical-glass-panel {
     position: absolute;
-    width: 3px;
-    height: 3px;
-    background-color: rgba(245, 158, 11, 0.8);
-    border-radius: 50%;
-    box-shadow: 0 0 6px #f59e0b;
-}
-.dot-pos-1 { top: 20%; left: 30%; }
-.dot-pos-2 { top: 25%; left: 38%; }
-.dot-pos-3 { top: 70%; left: 60%; }
-.dot-pos-4 { top: 62%; left: 72%; }
-.dot-pos-5 { top: 40%; left: 50%; background-color: #fff; box-shadow: 0 0 8px #fff; }
-
-/* Connecting vector tracking line indicators */
-.cluster-line {
-    position: absolute;
-    background-color: rgba(234, 88, 12, 0.08);
-    height: 1px;
-    transform-origin: left center;
-}
-.line-1-2 {
-    top: 20%; left: 30%;
-    width: 80px;
-    transform: rotate(28deg);
-}
-.line-3-4 {
-    top: 70%; left: 60%;
     width: 110px;
-    transform: rotate(-35deg);
+    height: 55px;
+    background: linear-gradient(to top, rgba(234, 88, 12, 0.08), transparent);
+    border-left: 1px solid rgba(234, 88, 12, 0.3);
+    border-right: 1px solid rgba(234, 88, 12, 0.3);
+    border-top: 1px dashed rgba(255, 255, 255, 0.2);
+    
+    /* Crucial: Counter-rotates the card so it stands perfectly upright on the ring floor */
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
 }
 
-/* --- THE PHYSICS ROTATION CORE --- */
-@keyframes radar-spin-clockwise {
-    from { transform: rotateZ(0deg); }
-    to { transform: rotateZ(360deg); }
+/* Positioning them along the lower front curves of the ring layout */
+.panel-left {
+    top: 75%; left: 15%;
+    transform: translateZ(0px) rotateX(-90deg) rotateY(35deg);
+}
+.panel-center {
+    top: 90%; left: 50%;
+    transform: translate(-50%, 0) rotateX(-90deg);
+}
+.panel-right {
+    top: 75%; right: 15%;
+    transform: translateZ(0px) rotateX(-90deg) rotateY(-35deg);
 }
 
-@keyframes radar-spin-counter {
-    from { transform: rotateZ(360deg); }
-    to { transform: rotateZ(0deg); }
+/* Faint simulated graph wave lines inside the cards */
+.panel-chart-line {
+    position: absolute;
+    bottom: 15px; inset-x: 4px; height: 12px;
+    border-top: 1.5px solid rgba(234, 88, 12, 0.6);
+    clip-path: polygon(0 80%, 20% 20%, 40% 70%, 60% 10%, 80% 90%, 100% 30%);
+}
+.spec-curve {
+    border-top-color: rgba(255, 255, 255, 0.7);
+}
+
+
+/* --- INNER FLOATING CLUSTER LAYERS --- */
+.inner-floating-cluster {
+    position: absolute;
+    inset: 260px;
+    transform-style: preserve-3d;
+    transform: translateZ(40px); /* Floats lower down than the outer orange ring */
+    border: 1px dashed rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+    animation: hologram-spin-counter 25s linear infinite;
+}
+
+.cluster-core-dot {
+    position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 6px; height: 6px; background-color: #fff; border-radius: 50%;
+    box-shadow: 0 0 15px 3px #fff;
+}
+
+
+/* --- DATA RIDE PARTICLES --- */
+.rim-node {
+    position: absolute;
+    width: 5px; height: 5px; border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+.node-orange { top: 0; left: 50%; background-color: #ea580c; box-shadow: 0 0 12px #ea580c; }
+.node-white { top: 50%; left: 100%; background-color: #fff; box-shadow: 0 0 12px #fff; }
+
+.constellation-particle {
+    position: absolute;
+    width: 3px; height: 3px; background-color: rgba(245, 158, 11, 0.7); border-radius: 50%;
+}
+.p1 { top: 20%; left: 25%; box-shadow: 0 0 6px #f59e0b; }
+.p2 { bottom: 30%; left: 15%; }
+.p3 { top: 40%; right: 20%; background-color: #fff; }
+
+
+/* --- HARDWARE-ACCELERATED ANIMATION LOOPS --- */
+@keyframes hologram-spin-clockwise {
+    from { transform: translateZ(90px) rotateZ(0deg); }
+    to { transform: translateZ(90px) rotateZ(360deg); }
+}
+
+@keyframes hologram-spin-counter {
+    from { transform: translateZ(40px) rotateZ(360deg); }
+    to { transform: translateZ(40px) rotateZ(0deg); }
 }
