@@ -109,43 +109,39 @@
         </div>
     </section>
 
-    <section class="max-w-6xl mx-auto px-6 py-24 relative">
-        <div class="flex flex-col lg:flex-row gap-16">
+    <section class="max-w-6xl mx-auto px-6 py-24 relative" id="deployment-matrix">
+        <div class="flex flex-col lg:flex-row gap-16 relative items-start">
             
-            <div class="lg:w-1/3">
-                <div class="sticky top-32">
-                    <h2 class="text-3xl font-bold mb-4">Deployment <br> Capabilities</h2>
-                    <p class="text-zinc-500 text-sm mb-8">Review our integration protocol for industrial automation pipelines.</p>
-                    
-                    <div class="flex gap-2 mb-4">
-                        <div class="h-1 w-8 bg-sky-500 rounded-full"></div>
-                        <div class="h-1 w-2 bg-zinc-800 rounded-full"></div>
-                        <div class="h-1 w-2 bg-zinc-800 rounded-full"></div>
-                    </div>
+            <div class="lg:w-1/3 sticky top-32">
+                <h2 class="text-3xl font-bold mb-4 matrix-title">Deployment <br> Capabilities</h2>
+                <p class="text-zinc-500 text-sm mb-8 matrix-desc">Review our integration protocol for industrial automation pipelines.</p>
+                <div class="flex gap-2 mb-4 matrix-lines">
+                    <div class="h-1 w-8 bg-sky-500 rounded-full"></div>
+                    <div class="h-1 w-2 bg-zinc-800 rounded-full"></div>
+                    <div class="h-1 w-2 bg-zinc-800 rounded-full"></div>
                 </div>
             </div>
 
             <div class="lg:w-2/3 flex flex-col gap-6">
-                
-                <div class="bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-8 backdrop-blur-md hover:border-sky-500/30 transition-colors group">
+                <div class="matrix-card bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-8 backdrop-blur-md">
                     <div class="text-sky-500 font-mono text-sm font-bold mb-2">01 // Integration</div>
                     <h3 class="text-xl font-bold text-white mb-3">PLC Programming & Logic</h3>
-                    <p class="text-zinc-400 text-sm leading-relaxed">Custom logic controller programming tailored for high-speed manufacturing and assembly lines.</p>
+                    <p class="text-zinc-400 text-sm leading-relaxed">Custom logic controller programming tailored for high-speed manufacturing.</p>
                 </div>
 
-                <div class="bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-8 backdrop-blur-md hover:border-sky-500/30 transition-colors group">
+                <div class="matrix-card bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-8 backdrop-blur-md">
                     <div class="text-sky-500 font-mono text-sm font-bold mb-2">02 // Robotics</div>
                     <h3 class="text-xl font-bold text-white mb-3">Robotic Arm Pathing</h3>
-                    <p class="text-zinc-400 text-sm leading-relaxed">Six-axis spatial programming for welding, pick-and-place, and precision machining tasks.</p>
+                    <p class="text-zinc-400 text-sm leading-relaxed">Six-axis spatial programming for precision machining tasks.</p>
                 </div>
 
-                <div class="bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-8 backdrop-blur-md hover:border-sky-500/30 transition-colors group">
+                <div class="matrix-card bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-8 backdrop-blur-md">
                     <div class="text-sky-500 font-mono text-sm font-bold mb-2">03 // Sensors</div>
                     <h3 class="text-xl font-bold text-white mb-3">Machine Vision Systems</h3>
-                    <p class="text-zinc-400 text-sm leading-relaxed">Optical defect detection and spatial awareness arrays to eliminate production line errors.</p>
+                    <p class="text-zinc-400 text-sm leading-relaxed">Optical defect detection and spatial awareness arrays.</p>
                 </div>
-
-            </div>
+                
+                </div>
         </div>
     </section>
 
