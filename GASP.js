@@ -102,7 +102,7 @@ window.addEventListener('DOMContentLoaded', () => {
     gsap.set("#hero-content", { opacity: 1, y: 0 }); 
 
     tl.to("#preloader", {
-        opacity: 0,
+        opacity: 0.2,
         duration: 0.6,
         ease: "power2.inOut",
         onComplete: () => { document.getElementById("preloader").style.display = "none"; }
@@ -167,7 +167,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const gridHelper = new THREE.GridHelper(100, 100, 0x222222, 0x111111);
     gridHelper.position.y = -4.0;
     gridHelper.material.transparent = true;
-    gridHelper.material.opacity = 0.5;
+    gridHelper.material.opacity = 0.650;
     scene.add(gridHelper);
 
     // =======================================================================
