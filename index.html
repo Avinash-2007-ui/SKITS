@@ -77,9 +77,9 @@
                         <div class="text-xs font-bold tracking-widest text-zinc-600 uppercase mb-2" data-key="nav_services">Services</div>
                         <div class="flex flex-col gap-2.5 pl-3 border-l border-zinc-800">
                             <a href="#services-section" class="text-xs hover:text-orange-400 transition-colors" data-key="card1_title">Industrial Automation & Robotics</a>
-                            <a href="#services-section" class="text-xs hover:text-blue-400 transition-colors" data-key="card2_title">Custom PCB Design</a>
+                            <a href="#services-section" class="text-xs hover:text-blue-400 transition-colors" data-key="card2_title">Medical Equipment & Health Care</a>
                             <a href="#services-section" class="text-xs hover:text-purple-400 transition-colors" data-key="card3_title">Telecom & Camera Matrices</a>
-                            <a href="#services-section" class="text-xs hover:text-emerald-400 transition-colors" data-key="card4_title">Fail-Safe Hardware Integration</a>
+                            <a href="#services-section" class="text-xs hover:text-emerald-400 transition-colors" data-key="card4_title">Custom PCB Design</a>
                         </div>
                     </li>
 
@@ -131,15 +131,19 @@
     </section>
     
     <!-- METRICS BANNER -->
-    <section class="bg-zinc-950 relative z-10 pt-32 pb-16">
+    <!-- METRICS CARDS SECTION -->
+    <!-- pt-40 gives the 3D orbits massive breathing room to rotate freely -->
+    <section class="bg-[#070708] relative z-10 pt-40 pb-20">
         
-        <div class="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-transparent to-zinc-950 pointer-events-none -mt-40"></div>
+        <!-- Smooth gradient fade from the 3D canvas down into the solid background -->
+        <div class="absolute top-0 inset-x-0 h-48 bg-gradient-to-b from-transparent to-[#070708] pointer-events-none -mt-48"></div>
         
-        <div class="max-w-6xl mx-auto px-6">
+        <div class="max-w-6xl mx-auto px-6 relative z-20">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 
-                <div class="bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-10 text-center hover:bg-zinc-900/70 hover:border-zinc-700/80 transition-all duration-300 shadow-2xl group backdrop-blur-md">
-                    <div class="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-zinc-500 mb-3 group-hover:scale-105 transition-transform duration-300">
+                <!-- Card 1 -->
+                <div class="group bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-10 flex flex-col items-center justify-center text-center hover:bg-zinc-800/60 hover:border-sky-500/50 hover:-translate-y-2 transition-all duration-300 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+                    <div class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-zinc-500 mb-4 group-hover:scale-110 transition-transform duration-300">
                         15+
                     </div>
                     <div class="text-sky-500 text-sm font-bold tracking-widest uppercase" data-key="metric_years">
@@ -147,20 +151,22 @@
                     </div>
                 </div>
 
-                <div class="bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-10 text-center hover:bg-zinc-900/70 hover:border-zinc-700/80 transition-all duration-300 shadow-2xl group backdrop-blur-md">
-                    <div class="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-zinc-500 mb-3 group-hover:scale-105 transition-transform duration-300">
+                <!-- Card 2 -->
+                <div class="group bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-10 flex flex-col items-center justify-center text-center hover:bg-zinc-800/60 hover:border-sky-500/50 hover:-translate-y-2 transition-all duration-300 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+                    <div class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-zinc-500 mb-4 group-hover:scale-110 transition-transform duration-300">
                         400+
                     </div>
-                    <div class="text-orange-500 text-sm font-bold tracking-widest uppercase" data-key="metric_nodes">
+                    <div class="text-sky-400 text-sm font-bold tracking-widest uppercase" data-key="metric_nodes">
                         Industrial Nodes
                     </div>
                 </div>
 
-                <div class="bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-10 text-center hover:bg-zinc-900/70 hover:border-zinc-700/80 transition-all duration-300 shadow-2xl group backdrop-blur-md">
-                    <div class="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-zinc-500 mb-3 group-hover:scale-105 transition-transform duration-300">
+                <!-- Card 3 -->
+                <div class="group bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-10 flex flex-col items-center justify-center text-center hover:bg-zinc-800/60 hover:border-sky-500/50 hover:-translate-y-2 transition-all duration-300 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+                    <div class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-zinc-500 mb-4 group-hover:scale-110 transition-transform duration-300">
                         99.9%
                     </div>
-                    <div class="text-emerald-500 text-sm font-bold tracking-widest uppercase" data-key="metric_uptime">
+                    <div class="text-sky-300 text-sm font-bold tracking-widest uppercase" data-key="metric_uptime">
                         System Uptime
                     </div>
                 </div>
