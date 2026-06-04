@@ -103,6 +103,50 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- E. The Interactive Sticky-Scroll Matrix (From the Video) ---
+        // 1. Animate the left side locking into place
+        const matrixTitle = document.querySelector(".matrix-title");
+        if (matrixTitle) {
+            gsap.from(".matrix-title, .matrix-desc, .matrix-lines", {
+                scrollTrigger: {
+                    trigger: "#deployment-matrix",
+                    start: "top 80%", // Triggers when the section hits the bottom 20% of the screen
+                    toggleActions: "play none none reverse" 
+                },
+                opacity: 0,
+                x: -30,         // Slides in from the left
+                stagger: 0.15,  // Creates that cascading "one-by-one" effect
+                duration: 1,
+                ease: "power3.out"
+            });
+        }
+
+        // 2. Animate the right-side cards exactly like the GSAP showcase
+        const matrixCards = gsap.utils.toArray('.matrix-card');
+        matrixCards.forEach((card) => {
+            gsap.fromTo(card, 
+                { 
+                    opacity: 0, 
+                    y: 60,         // Starts pushed down
+                    scale: 0.95,   // Slightly shrunk
+                    rotationX: 5   // Slight 3D tilt
+                },
+                {
+                    opacity: 1, 
+                    y: 0, 
+                    scale: 1, 
+                    rotationX: 0,
+                    duration: 0.8,
+                    ease: "back.out(1.2)", // Gives it that premium "snap" into place
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 85%", // Animates exactly as the card enters the screen
+                        toggleActions: "play none none reverse" // REVERSES if they scroll back up!
+                    }
+                }
+            );
+        });
+
     // =======================================================================
     // 3. THREE.JS ENGINE SETUP (Cyber Blue Theme)
     // =======================================================================
