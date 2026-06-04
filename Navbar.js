@@ -1,3 +1,7 @@
+console.log("REACT ENGINE: Navbar loaded successfully!");
+const { useState, useEffect } = React;
+// ... rest of your Navbar code ...
+
 const { useState, useEffect } = React;
 
 function SKITSNavbar() {
