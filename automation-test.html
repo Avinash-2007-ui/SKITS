@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKITS | Automation Pipeline</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <style>
+        /* Custom glow effect for that high-end tech feel */
+        .neon-glow { box-shadow: 0 0 20px rgba(163, 230, 53, 0.2); }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
+    </style>
+</head>
+<body class="bg-zinc-950 text-white font-sans overflow-x-hidden antialiased">
+
+    <section class="h-screen flex flex-col items-center justify-center relative">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-zinc-950"></div>
+        
+        <div class="relative z-10 text-center px-4">
+            <span class="text-lime-400 uppercase tracking-[0.3em] text-sm font-bold block mb-4 hero-element opacity-0">SKITS Infrastructure</span>
+            <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-tight hero-element opacity-0">FACTORY <br/> AUTOMATION</h1>
+            <p class="text-zinc-400 max-w-xl mx-auto hero-element opacity-0">We don't just supply hardware. We engineer the central nervous system for heavy industry, from conveyor batching to 1km wireless overrides.</p>
+        </div>
+        
+        <div class="absolute bottom-10 flex flex-col items-center justify-center opacity-50 hero-element">
+            <span class="text-xs uppercase tracking-widest mb-2">Initiate Sequence</span>
+            <div class="w-[1px] h-12 bg-lime-400/50"></div>
+        </div>
+    </section>
+
+    <section class="relative py-32 px-4 md:px-0">
+        
+        <div class="absolute left-1/2 top-0 bottom-0 w-[2px] bg-zinc-800 -translate-x-1/2 hidden md:block">
+            <div id="power-line" class="w-full bg-lime-400 h-0 shadow-[0_0_15px_#a3e635]"></div>
+        </div>
+
+        <div class="max-w-5xl mx-auto relative z-10">
+
+            <div class="flex flex-col md:flex-row justify-between items-center mb-24 pipeline-node opacity-0">
+                <div class="md:w-[45%] text-right hidden md:block">
+                    <h2 class="text-3xl font-bold text-white mb-2">Optical Sensor Array</h2>
+                    <p class="text-zinc-400">High-precision batch counting integrated directly into active conveyor belts.</p>
+                </div>
+                <div class="w-6 h-6 rounded-full bg-zinc-900 border-2 border-lime-400 neon-glow z-10 my-6 md:my-0"></div>
+                <div class="w-full md:w-[45%] glass-card p-8 rounded-2xl">
+                    <span class="text-lime-400 text-sm font-mono mb-2 block">PHASE 01</span>
+                    <h3 class="text-xl font-bold mb-3">Data Acquisition</h3>
+                    <p class="text-sm text-zinc-400">Installing ruggedized optical sensors to track passing materials in real-time, feeding raw data to the central logic controller.</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-center mb-24 pipeline-node opacity-0">
+                <div class="w-full md:w-[45%] glass-card p-8 rounded-2xl order-3 md:order-1">
+                    <span class="text-lime-400 text-sm font-mono mb-2 block">PHASE 02</span>
+                    <h3 class="text-xl font-bold mb-3">Logic Processing</h3>
+                    <p class="text-sm text-zinc-400">Custom PCB integration ensures zero-latency communication between the physical machines and the digital monitoring dashboard.</p>
+                </div>
+                <div class="w-6 h-6 rounded-full bg-zinc-900 border-2 border-lime-400 neon-glow z-10 my-6 md:my-0 order-2"></div>
+                <div class="md:w-[45%] order-1 md:order-3 hidden md:block">
+                    <h2 class="text-3xl font-bold text-white mb-2">Custom R&D Wiring</h2>
+                    <p class="text-zinc-400">Replacing legacy cement machine logic with modern, fault-tolerant circuitry.</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-center pipeline-node opacity-0">
+                <div class="md:w-[45%] text-right hidden md:block">
+                    <h2 class="text-3xl font-bold text-white mb-2">1KM Wireless Hoist</h2>
+                    <p class="text-zinc-400">Mission-critical physical overrides engineered for extreme industrial environments.</p>
+                </div>
+                <div class="w-6 h-6 rounded-full bg-zinc-900 border-2 border-lime-400 neon-glow z-10 my-6 md:my-0"></div>
+                <div class="w-full md:w-[45%] glass-card p-8 rounded-2xl">
+                    <span class="text-lime-400 text-sm font-mono mb-2 block">PHASE 03</span>
+                    <h3 class="text-xl font-bold mb-3">System Execution</h3>
+                    <p class="text-sm text-zinc-400">The final loop. Taking the processed data and turning it into physical action, allowing operators to command heavy machinery remotely.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 1. The Hero Entrance Animation
+        gsap.to(".hero-element", {
+            y: -20,
+            opacity: 1,
+            duration: 1,
+            stagger: 0.2,
+            ease: "power3.out",
+            delay: 0.2
+        });
+
+        // 2. The Central Power Line Draw Effect
+        gsap.to("#power-line", {
+            height: "100%",
+            ease: "none",
+            scrollTrigger: {
+                trigger: ".pipeline-node", // Start when the first node appears
+                start: "top center",
+                end: "bottom center", // End when the last node appears
+                endTrigger: ".pipeline-node:last-child",
+                scrub: 1 // Ties the drawing directly to the scrollbar
+            }
+        });
+
+        // 3. The Nodes Sliding In
+        const nodes = gsap.utils.toArray(".pipeline-node");
+        
+        nodes.forEach((node, i) => {
+            // Alternate sliding in from left and right
+            const xOffset = i % 2 === 0 ? 100 : -100;
+            
+            gsap.fromTo(node, 
+                { x: xOffset, opacity: 0 },
+                { 
+                    x: 0, 
+                    opacity: 1, 
+                    duration: 1, 
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: node,
+                        start: "top 80%", // Triggers when the top of the node is 80% down the screen
+                        toggleActions: "play none none reverse"
+                    }
+                }
+            );
+        });
+    </script>
+</body>
+</html>
