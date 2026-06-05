@@ -11,266 +11,157 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <style>
+        /* Custom glow effect for that high-end tech feel */
+        .neon-glow { box-shadow: 0 0 20px rgba(249, 115, 22, 0.4); } /* Updated to Orange */
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
+    </style>
 </head>
-<body class="text-zinc-100 bg-zinc-950 antialiased overflow-x-hidden selection:bg-orange-500 selection:text-black">
-    
-    <!-- PRELOADER -->
-    <div id="preloader">
-        <div class="preloader-content">
-            <img src="logoSKITS.png" alt="SKITS Logo" class="loader-logo">
-            <div class="waving-dots">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-    </div>
+<body class="bg-zinc-950 text-white font-sans overflow-x-hidden antialiased">
 
-    <!-- NAVBAR -->
-    <header id="navbar" class="fixed top-6 inset-x-0 z-50 flex flex-col items-center px-4 opacity-0">
-        <nav class="glass-nav flex items-center justify-between w-full max-w-5xl h-14 px-6 rounded-full shadow-2xl relative">
-            
-            <div class="text-xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-500 cursor-pointer">
-                SKITS
-            </div>
-            
-            <ul class="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-400 h-full">
-                <li><a href="#" class="hover:text-white transition-colors cursor-pointer" data-key="nav_home">Home</a></li>
-                
-                <li class="relative group h-full flex items-center">
-                    <a href="#services-section" class="hover:text-white transition-colors cursor-pointer flex items-center gap-1 py-4" data-key="nav_services">
-                        Services
-                        <svg class="w-3 h-3 group-hover:rotate-180 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M19 9l-7 7-7-7"/></svg>
-                    </a>
-                    
-                    <div class="absolute top-[100%] left-1/2 -translate-x-1/2 w-64 hidden group-hover:block pt-2 animate-[fadeIn_0.2s_ease-out]">
-                        <div class="bg-zinc-950/95 border border-zinc-800/80 backdrop-blur-xl p-3 rounded-2xl shadow-2xl flex flex-col gap-1">
-                            <a href="automation.html" class="px-4 py-2.5 text-xs font-semibold hover:bg-orange-500/10 hover:text-orange-400 rounded-xl transition-all" data-key="card1_title">Industrial Automation & Robotics</a>
-                            <a href="automation-test.html" class="px-4 py-2.5 text-xs font-semibold hover:bg-blue-500/10 hover:text-blue-400 rounded-xl transition-all" data-key="card2_title">Medical Equipment & Health Care</a>
-                            <a href="#services-section" class="px-4 py-2.5 text-xs font-semibold hover:bg-purple-500/10 hover:text-purple-400 rounded-xl transition-all" data-key="card3_title">Telecom & Camera Matrices</a>
-                            <a href="#services-section" class="px-4 py-2.5 text-xs font-semibold hover:bg-emerald-500/10 hover:text-emerald-400 rounded-xl transition-all" data-key="card4_title">Custom PCB Design</a>
-                        </div>
-                    </div>
-                </li>
-                
-                <li><a href="#" class="hover:text-white transition-colors cursor-pointer" data-key="nav_about">About</a></li>
-                <li><a href="#" class="hover:text-white transition-colors cursor-pointer" data-key="nav_contact">Contact</a></li>
-            </ul>
-            
-            <button class="hidden md:block px-5 h-9 text-xs font-bold bg-zinc-100 text-black rounded-full hover:bg-orange-500 hover:text-white transition-all duration-300 shadow-md" data-key="nav_tech_brief">
-                Get Tech Brief
-            </button>
-
-            <button id="mobile-menu-toggle" class="block md:hidden text-zinc-400 hover:text-white p-1 transition-colors">
-                <svg id="hamburger-icon" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            </button>
-        </nav>
-
-        <div id="mobile-menu-panel" class="w-full max-w-5xl mt-2 hidden md:hidden px-4 animate-[fadeIn_0.3s_ease-out]">
-            <div class="bg-zinc-950/90 border border-zinc-800/60 backdrop-blur-xl rounded-2xl p-5 shadow-2xl flex flex-col gap-4">
-                <ul class="flex flex-col gap-3 text-sm font-medium text-zinc-400">
-                    <li><a href="#" class="block py-1 hover:text-white transition-colors" data-key="nav_home">Home</a></li>
-                    
-                    <li class="border-y border-zinc-900 py-2 my-1">
-                        <div class="text-xs font-bold tracking-widest text-zinc-600 uppercase mb-2" data-key="nav_services">Services</div>
-                        <div class="flex flex-col gap-2.5 pl-3 border-l border-zinc-800">
-                            <a href="#services-section" class="text-xs hover:text-orange-400 transition-colors" data-key="card1_title">Industrial Automation & Robotics</a>
-                            <a href="#services-section" class="text-xs hover:text-blue-400 transition-colors" data-key="card2_title">Medical Equipment & Health Care</a>
-                            <a href="#services-section" class="text-xs hover:text-purple-400 transition-colors" data-key="card3_title">Telecom & Camera Matrices</a>
-                            <a href="#services-section" class="text-xs hover:text-emerald-400 transition-colors" data-key="card4_title">Custom PCB Design</a>
-                        </div>
-                    </li>
-
-                    <li><a href="#" class="block py-1 hover:text-white transition-colors" data-key="nav_about">About</a></li>
-                    <li><a href="#" class="block py-1 hover:text-white transition-colors" data-key="nav_contact">Contact</a></li>
-                </ul>
-                <button class="w-full h-10 text-xs font-bold bg-zinc-100 text-black rounded-xl hover:bg-orange-500 hover:text-white transition-all duration-300" data-key="nav_tech_brief">
-                    Get Tech Brief
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- HERO SECTION -->
-    <!-- CINEMATIC 3D ORBITAL HERO SECTION -->
-    <!-- EXACT MATCH 3D RADAR SPACE -->
-    <section class="relative min-h-screen flex flex-col items-center justify-center text-center px-4 pt-20 overflow-hidden bg-[#070708]">
+    <!-- HERO SECTION (Upgraded 2-Column Layout) -->
+    <section class="min-h-screen flex flex-col md:flex-row items-center justify-between relative px-6 md:px-24 overflow-hidden">
         
-        <div class="absolute inset-0 w-full h-full pointer-events-none z-0" id="canvas-3d-stage"></div>
+        <!-- The Orange to Blue Radial Background Gradient -->
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-orange-600/10 via-blue-900/10 to-zinc-950"></div>
         
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(234,88,12,0.04)_0,transparent_60%)] pointer-events-none z-0"></div>
-
-        <div id="hero-content" class="max-w-3xl z-10 opacity-0 transform translate-y-10">
-            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-sky-500/20 bg-sky-500/10 text-xs font-semibold text-sky-400 mb-6 tracking-wide uppercase">
-                <span class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse"></span> 
-                <span data-key="hero_pill">Enterprise Systems</span>
-            </span>
+        <!-- Left Side: Text Content -->
+        <div class="relative z-10 w-full md:w-3/5 text-left pt-20 md:pt-0">
+            <span class="text-orange-500 uppercase tracking-[0.3em] text-sm font-bold block mb-4 hero-text-anim opacity-0 translate-y-10">SKITS Infrastructure</span>
             
-            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-200 to-zinc-500 leading-[1.1] mb-6" data-key="hero_title">
-                Next-Gen <br> Automation
+            <!-- White to Dark Gradient Text -->
+            <h1 class="text-6xl md:text-8xl font-black mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-600 hero-text-anim opacity-0 translate-y-10 leading-tight">
+                FACTORY <br/> AUTOMATION
             </h1>
             
-            <p class="text-zinc-400 text-base sm:text-lg max-w-lg mx-auto leading-relaxed mb-10" data-key="hero_desc">
-                Fail-safe hardware integration and multi-layer routing built for industrial scale.
-            </p>
-            
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <button class="w-full sm:w-auto px-8 h-12 bg-sky-600 hover:bg-sky-500 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2 group shadow-lg shadow-sky-900/20">
-                    <span data-key="hero_btn_explore">Explore Infrastructure</span>
-                    <svg class="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                    </svg>
-                </button>
-                <button class="w-full sm:w-auto px-8 h-12 bg-zinc-900/80 border border-zinc-800 text-zinc-300 font-medium rounded-xl hover:bg-zinc-800 transition-all" data-key="hero_btn_arch">
-                    Technical Architecture
-                </button>
-            </div>
+            <p class="text-zinc-400 max-w-xl hero-text-anim opacity-0 translate-y-10 text-lg">We don't just supply hardware. We engineer the central nervous system for heavy industry, from conveyor batching to 1km wireless overrides.</p>
         </div>
-    </section>
-    
-    <!-- METRICS BANNER -->
-    <!-- METRICS CARDS SECTION -->
-    <!-- pt-40 gives the 3D orbits massive breathing room to rotate freely -->
-    <section class="bg-[#070708] relative z-10 pt-40 pb-20">
+
+        <!-- Right Side: 3D Robot Arm Placeholder -->
+        <div class="relative z-10 w-full md:w-2/5 flex justify-center items-center mt-12 md:mt-0 robot-arm-container opacity-0 translate-x-20">
+            <!-- Note: Swap this src with the export of your actual Figma Robot Arm -->
+            <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800&auto=format&fit=crop" alt="Robotic Arm" class="w-full max-w-md rounded-2xl shadow-[0_0_50px_rgba(249,115,22,0.15)] object-cover mix-blend-screen grayscale contrast-125 border border-orange-500/20">
+        </div>
         
-        <!-- Smooth gradient fade from the 3D canvas down into the solid background -->
-        <div class="absolute top-0 inset-x-0 h-48 bg-gradient-to-b from-transparent to-[#070708] pointer-events-none -mt-48"></div>
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center justify-center opacity-0 scroll-indicator">
+            <span class="text-xs uppercase tracking-widest mb-2 text-orange-500">Initiate Sequence</span>
+            <div class="w-[1px] h-12 bg-gradient-to-b from-orange-500 to-transparent"></div>
+        </div>
+    </section>
+
+    <!-- PIPELINE SECTION -->
+    <section class="relative py-32 px-4 md:px-0">
         
-        <div class="max-w-6xl mx-auto px-6 relative z-20">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                
-                <!-- Card 1 -->
-                <div class="group bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-10 flex flex-col items-center justify-center text-center hover:bg-zinc-800/60 hover:border-sky-500/50 hover:-translate-y-2 transition-all duration-300 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-                    <div class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-zinc-500 mb-4 group-hover:scale-110 transition-transform duration-300">
-                        15+
-                    </div>
-                    <div class="text-sky-500 text-sm font-bold tracking-widest uppercase" data-key="metric_years">
-                        Years Engineering
-                    </div>
-                </div>
+        <!-- The Central "Power Line" (Now Orange) -->
+        <div class="absolute left-1/2 top-0 bottom-0 w-[2px] bg-zinc-800 -translate-x-1/2 hidden md:block">
+            <div id="power-line" class="w-full bg-orange-500 h-0 shadow-[0_0_15px_#f97316]"></div>
+        </div>
 
-                <!-- Card 2 -->
-                <div class="group bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-10 flex flex-col items-center justify-center text-center hover:bg-zinc-800/60 hover:border-sky-500/50 hover:-translate-y-2 transition-all duration-300 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-                    <div class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-zinc-500 mb-4 group-hover:scale-110 transition-transform duration-300">
-                        400+
-                    </div>
-                    <div class="text-sky-400 text-sm font-bold tracking-widest uppercase" data-key="metric_nodes">
-                        Industrial Nodes
-                    </div>
-                </div>
+        <div class="max-w-5xl mx-auto relative z-10">
 
-                <!-- Card 3 -->
-                <div class="group bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-10 flex flex-col items-center justify-center text-center hover:bg-zinc-800/60 hover:border-sky-500/50 hover:-translate-y-2 transition-all duration-300 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-                    <div class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-zinc-500 mb-4 group-hover:scale-110 transition-transform duration-300">
-                        99.9%
-                    </div>
-                    <div class="text-sky-300 text-sm font-bold tracking-widest uppercase" data-key="metric_uptime">
-                        System Uptime
-                    </div>
+            <!-- Node 1 -->
+            <div class="flex flex-col md:flex-row justify-between items-center mb-24 pipeline-node opacity-0">
+                <div class="md:w-[45%] text-right hidden md:block">
+                    <h2 class="text-3xl font-bold text-white mb-2">Optical Sensor Array</h2>
+                    <p class="text-zinc-400">High-precision batch counting integrated directly into active conveyor belts.</p>
                 </div>
-
+                <div class="w-6 h-6 rounded-full bg-zinc-900 border-2 border-orange-500 neon-glow z-10 my-6 md:my-0"></div>
+                <div class="w-full md:w-[45%] glass-card p-8 rounded-2xl">
+                    <span class="text-orange-500 text-sm font-mono mb-2 block">PHASE 01</span>
+                    <h3 class="text-xl font-bold mb-3">Data Acquisition</h3>
+                    <p class="text-sm text-zinc-400">Installing ruggedized optical sensors to track passing materials in real-time, feeding raw data to the central logic controller.</p>
+                </div>
             </div>
+
+            <!-- Node 2 -->
+            <div class="flex flex-col md:flex-row justify-between items-center mb-24 pipeline-node opacity-0">
+                <div class="w-full md:w-[45%] glass-card p-8 rounded-2xl order-3 md:order-1">
+                    <span class="text-blue-500 text-sm font-mono mb-2 block">PHASE 02</span>
+                    <h3 class="text-xl font-bold mb-3">Logic Processing</h3>
+                    <p class="text-sm text-zinc-400">Custom PCB integration ensures zero-latency communication between the physical machines and the digital monitoring dashboard.</p>
+                </div>
+                <!-- Node changed to Blue for gradient transition feel -->
+                <div class="w-6 h-6 rounded-full bg-zinc-900 border-2 border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.4)] z-10 my-6 md:my-0 order-2"></div>
+                <div class="md:w-[45%] order-1 md:order-3 hidden md:block">
+                    <h2 class="text-3xl font-bold text-white mb-2">Custom R&D Wiring</h2>
+                    <p class="text-zinc-400">Replacing legacy cement machine logic with modern, fault-tolerant circuitry.</p>
+                </div>
+            </div>
+
         </div>
     </section>
 
-    <!-- SERVICES BENTO GRID -->
-    <section id="services-section" class="max-w-6xl mx-auto px-4 py-32 border-t border-zinc-900/60 relative z-10">
-        <div class="mb-20 text-center md:text-left">
-            <h2 class="text-3xl sm:text-4xl font-bold tracking-tight mb-4" data-key="services_title">Core Competencies & Services</h2>
-            <p class="text-zinc-500 max-w-xl mx-auto md:mx-0" data-key="services_desc">High-integrity execution patterns designed to optimize factories, plants, and complex networking hardware fields.</p>
-        </div>
+    <!-- THE GSAP MAGIC -->
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[240px]">
-            <div class="bento-card md:col-span-2 md:row-span-2 rounded-3xl p-8 flex flex-col justify-between overflow-hidden relative group cursor-pointer bg-zinc-900/40 border border-zinc-800/50">
-                <div class="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div class="w-12 h-12 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-orange-500 font-bold z-10">01</div>
-                <div class="z-10">
-                    <h3 class="text-2xl font-bold mb-2 tracking-tight" data-key="card1_title">Industrial Automation & Robotics</h3>
-                    <p class="text-zinc-400 text-sm max-w-md leading-relaxed" data-key="card1_desc">High-speed system deployment, precise factory-wide wiring arrays, and machine-level control structures built for heavy industrial environments.</p>
-                </div>
-            </div>
+        // 1. Advanced Hero Entrance Timeline
+        const heroTl = gsap.timeline();
 
-            <div class="bento-card md:col-span-1 md:row-span-1 rounded-3xl p-8 flex flex-col justify-between overflow-hidden relative group cursor-pointer bg-zinc-900/40 border border-zinc-800/50">
-                <div class="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div class="w-11 h-11 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-blue-500 font-bold z-10">02</div>
-                <div class="z-10">
-                    <h3 class="text-xl font-bold mb-1 tracking-tight" data-key="card2_title">Custom PCB Design</h3>
-                    <p class="text-zinc-400 text-sm leading-relaxed" data-key="card2_desc">Multilayer routing and micro-component board development.</p>
-                </div>
-            </div>
+        // Staggered text reveal with a slight move upwards
+        heroTl.to(".hero-text-anim", {
+            y: 0,
+            opacity: 1,
+            duration: 1.2,
+            stagger: 0.2,
+            ease: "power4.out",
+            delay: 0.2
+        })
+        // Snap the robot arm in from the right side, aiming at the text
+        .to(".robot-arm-container", {
+            x: 0,
+            opacity: 1,
+            duration: 1.5,
+            ease: "back.out(1.2)"
+        }, "-=1")
+        // Fade in the scroll indicator at the end
+        .to(".scroll-indicator", {
+            opacity: 0.5,
+            duration: 1
+        }, "-=0.5");
 
-            <div class="bento-card md:col-span-1 md:row-span-2 rounded-3xl p-8 flex flex-col justify-between overflow-hidden relative group cursor-pointer bg-zinc-900/40 border border-zinc-800/50">
-                <div class="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div class="w-11 h-11 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-purple-500 font-bold z-10">03</div>
-                <div class="z-10">
-                    <h3 class="text-xl font-bold mb-2 tracking-tight" data-key="card3_title">Telecom & Camera Matrices</h3>
-                    <p class="text-zinc-400 text-sm leading-relaxed" data-key="card3_desc">Structural enterprise network mapping, optical routing, and multi-layered closed-circuit safety arrays.</p>
-                </div>
-            </div>
+        // 2. Continuous "Breathing" 3D Float for the Robot Arm
+        gsap.to(".robot-arm-container", {
+            y: -15,
+            duration: 3,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut"
+        });
 
-            <div class="bento-card md:col-span-2 md:row-span-1 rounded-3xl p-8 flex flex-col justify-between overflow-hidden relative group cursor-pointer bg-zinc-900/40 border border-zinc-800/50">
-                <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div class="w-11 h-11 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-emerald-500 font-bold z-10">04</div>
-                <div class="z-10">
-                    <h3 class="text-xl font-bold mb-1 tracking-tight" data-key="card4_title">Fail-Safe Hardware Integration</h3>
-                    <p class="text-zinc-400 text-sm max-w-xl leading-relaxed" data-key="card4_desc">Deploying specialized security architecture safeguards directly to physical industrial nodes for uninterrupted uptime.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+        // 3. The Central Power Line Draw Effect
+        gsap.to("#power-line", {
+            height: "100%",
+            ease: "none",
+            scrollTrigger: {
+                trigger: ".pipeline-node", 
+                start: "top center",
+                end: "bottom center", 
+                endTrigger: ".pipeline-node:last-child",
+                scrub: 1 
+            }
+        });
 
-    <!-- NEW ENTERPRISE FOOTER -->
-    <footer class="bg-zinc-950 border-t border-zinc-900 pt-12 pb-8 relative z-10">
-        <div class="max-w-6xl mx-auto px-6">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-                
-                <!-- Brand & Copyright -->
-                <div class="text-center md:text-left">
-                    <div class="text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-500 mb-1">SKITS</div>
-                    <p class="text-zinc-600 text-xs" data-key="footer_copyright">&copy; 2026 SKITS Engineering. All rights reserved.</p>
-                </div>
-
-                <!-- Language Selector (Wired for translate.js) -->
-                <div class="flex flex-wrap justify-center gap-6 text-xs font-semibold text-zinc-500 uppercase tracking-widest">
-                    <a href="#" class="hover:text-orange-500 transition-colors" data-lang="en">EN</a>
-                    <a href="#" class="hover:text-orange-500 transition-colors" data-lang="es">ES</a>
-                    <a href="#" class="hover:text-orange-500 transition-colors" data-lang="de">DE</a>
-                    <a href="#" class="hover:text-orange-500 transition-colors" data-lang="it">IT</a>
-                    <a href="#" class="hover:text-orange-500 transition-colors" data-lang="fr">FR</a>
-                    <a href="#" class="hover:text-orange-500 transition-colors" data-lang="zh">ZH</a>
-                </div>
-
-                <!-- Social Media Icons -->
-                <div class="flex items-center gap-5 text-zinc-500">
-                    <a href="#" class="hover:text-white transition-colors">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M19.812 5.418c.861.23 1.538.907 1.768 1.768C21.998 8.746 22 12 22 12s0 3.255-.418 4.814a2.504 2.504 0 0 1-1.768 1.768c-1.56.419-7.814.419-7.814.419s-6.255 0-7.814-.419a2.505 2.505 0 0 1-1.768-1.768C2 15.255 2 12 2 12s0-3.255.417-4.814a2.507 2.507 0 0 1 1.769-1.768C5.744 5 11.998 5 11.998 5s6.255 0 7.814.418ZM15.194 12 10 15V9l5.194 3Z" clip-rule="evenodd"></path></svg>
-                    </a>
-                    <a href="#" class="hover:text-white transition-colors">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clip-rule="evenodd"></path></svg>
-                    </a>
-                    <a href="#" class="hover:text-white transition-colors">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg>
-                    </a>
-                </div>
-                
-            </div>
-        </div>
-    </footer>
-    
-    <!-- Link your JS files here at the bottom -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script> 
-
-    <script src="translate.js"></script>
-    <script src="GASP.js"></script> </body>
-</html>
+        // 4. The Nodes Sliding In
+        const nodes = gsap.utils.toArray(".pipeline-node");
+        nodes.forEach((node, i) => {
+            const xOffset = i % 2 === 0 ? 100 : -100;
+            gsap.fromTo(node, 
+                { x: xOffset, opacity: 0 },
+                { 
+                    x: 0, 
+                    opacity: 1, 
+                    duration: 1, 
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: node,
+                        start: "top 80%", 
+                        toggleActions: "play none none reverse"
+                    }
+                }
+            );
+        });
+    </script>
 </body>
 </html>
