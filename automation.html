@@ -94,16 +94,36 @@
     </header>
 
 
-    <section class="relative pt-40 pb-20 px-6 flex flex-col items-center justify-center text-center border-b border-zinc-900/80">
-        <div id="hero-content" class="max-w-3xl relative z-10 opacity-0 transform translate-y-10">
-            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-sky-500/20 bg-sky-500/10 text-xs font-semibold text-sky-400 mb-6 tracking-wide uppercase">
-                <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span> 
+   <!-- HERO SECTION WITH VIDEO BACKGROUND -->
+    <section class="relative pt-40 pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center text-center overflow-hidden border-b border-zinc-900/80">
+        
+        <!-- 1. The Video Layer -->
+        <video 
+            autoplay 
+            muted 
+            loop 
+            playsinline 
+            class="absolute inset-0 w-full h-full object-cover z-0 opacity-40 pointer-events-none">
+            <source src="your-automation-video.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+
+        <!-- 2. The Orange-to-Blue Cinematic Overlay -->
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-orange-500/10 via-blue-900/20 to-[#070708] z-10 pointer-events-none"></div>
+
+        <!-- 3. The Content Layer -->
+        <div id="hero-content" class="max-w-4xl relative z-20 opacity-0 transform translate-y-10">
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-500/20 bg-orange-500/10 text-xs font-semibold text-orange-400 mb-6 tracking-wide uppercase">
+                <span class="w-1.5 h-1.5 rounded-full bg-orange-500 shadow-[0_0_8px_#f97316]"></span> 
                 <span data-key="card1_title">Industrial Automation & Robotics</span>
             </span>
-            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white mb-6">
+            
+            <!-- Metallic Text Gradient -->
+            <h1 class="text-5xl sm:text-6xl lg:text-8xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white via-zinc-100 to-zinc-500 mb-6 leading-tight">
                 Industrial Automation <br> <span class="text-zinc-500">& Robotics</span>
             </h1>
-            <p class="text-zinc-400 text-lg max-w-xl mx-auto" data-key="card1_desc">
+            
+            <p class="text-zinc-400 text-lg sm:text-xl max-w-2xl mx-auto" data-key="card1_desc">
                 High-speed system deployment, precise factory-wide wiring arrays, and machine-level control structures built for heavy industrial environments.
             </p>
         </div>
